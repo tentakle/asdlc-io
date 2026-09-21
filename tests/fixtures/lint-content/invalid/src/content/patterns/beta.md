@@ -1,0 +1,3 @@
+---
+relatedIds: ["concepts/alpha"]
+---
