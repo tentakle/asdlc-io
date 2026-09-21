@@ -76,9 +76,24 @@ pnpm install
 This project is more than just a website; it is an MCP server.
 
 - **Endpoint**: `https://asdlc.io/mcp`
-- **Transport**: HTTP with Server-Sent Events (SSE).
-- **Architecture**: Powered by a build-time manifest to ensure compatibility with Edge runtimes.
-- **Verification**: Run `pnpm test:mcp-preview <url>` to verify a deployment.
+- **Transport after cutover**: stateless Streamable HTTP, JSON responses, MCP `2026-07-28` only. No legacy initialization, SSE endpoint, sessions, or downgrade path.
+- **Architecture**: official TypeScript server SDK `2.0.0` over a build-time content manifest, packaged for Netlify Edge.
+- **Request requirements**: POST JSON with `Accept: application/json, text/event-stream`, `MCP-Protocol-Version`, `Mcp-Method`, and `Mcp-Name` for tool calls. Each request supplies protocol-version and client-capability metadata; discovery is optional.
+- **Contract**: [MCP transport](./specs/mcp-transport/spec.md).
+- **Verification**: local protocol tests and Netlify bundling cover implementation. AL-102 owns the modernized `pnpm test:mcp-preview <url>` script and deployed host verification. Claude Code `2.1.278` and TypeScript client `2.0.0` remain **unverified targets**, not certified clients.
+
+Browser access permits `https://asdlc.io` exactly; native clients may omit Origin.
+For a deploy preview, set `MCP_PREVIEW_ORIGIN` to that preview's exact HTTPS
+origin in Netlify environment configuration with **Functions** scope. It is read
+only when Netlify reports `deploy-preview`; other preview origins remain denied.
+Local development can set `MCP_LOCAL_ORIGIN` (for example
+`http://localhost:4321`) in the `dev` context. Production ignores both variables.
+These settings use [Netlify's Edge environment API](https://docs.netlify.com/build/edge-functions/api/),
+not request Host or Origin reflection. Never add wildcard preview grants.
+
+Cutover requires AL-102's deployment evidence. Rollback must keep the modern-only
+boundary; if no known-good modern deployment exists, disable `/mcp` or fix forward
+instead of restoring the legacy handler.
 
 ## Testing & Validation
 

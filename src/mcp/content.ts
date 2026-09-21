@@ -110,10 +110,14 @@ export class ContentService {
   private articles: Article[];
 
   constructor(articles: Article[], fuseIndex?: FusePrebuiltIndex) {
-    this.articles = articles;
-    this.fuse = fuseIndex
-      ? (new Fuse(articles, FUSE_OPTIONS, fuseIndex) as Fuse<Article>)
-      : new Fuse(articles, FUSE_OPTIONS);
+    this.articles = articles.filter(
+      (article) => article.status === "Live" || article.status === "Experimental",
+    );
+    // A generated index can only be reused when filtering retained its exact document order.
+    this.fuse =
+      fuseIndex && this.articles.length === articles.length
+        ? (new Fuse(articles, FUSE_OPTIONS, fuseIndex) as Fuse<Article>)
+        : new Fuse(this.articles, FUSE_OPTIONS);
   }
 
   /**

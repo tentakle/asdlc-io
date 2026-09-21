@@ -32,7 +32,7 @@ governed by the [MCP eval contract](../mcp-evals/spec.md).
 | Tool behavior | `src/mcp/tools.ts` defines the three existing tools; `src/mcp/content.ts` owns retrieval. Wire-format changes preserve content behavior. |
 | Data | `src/content/config.ts` defines article data. `scripts/generate-mcp-index.mjs` produces `src/mcp/articles.json` and `src/mcp/fuse-index.json` for a deployment. |
 | Local verification | `tests/mcp/server.test.ts`, `tests/mcp/mcp.edge.test.ts`, and `tests/mcp/content.test.ts`. |
-| Deployment verification | `scripts/test-deploy-preview.mjs`, supported client runs, and configuration guidance in `README.md`. |
+| Deployment verification | `scripts/test-deploy-preview.mjs`, supported client runs, and configuration guidance in [README.md](../../README.md). |
 
 The adapter depends on the content/tool layer. Retrieval remains callable without
 HTTP. Immutable index reuse is permitted; request context is independent of
@@ -159,20 +159,31 @@ runtime returns to ADR review rather than silently changing the hosting model.
 
 ### Definition of Done
 
-- [ ] Local protocol tests cover the request, response, error, and browser tables.
-- [ ] Discovery and direct calls work on fresh independent instances with only
+- [x] Local protocol tests cover the request, response, error, and browser tables.
+- [x] Discovery and direct calls work on fresh independent instances with only
       the current request's metadata; no session identifier is issued.
-- [ ] Legacy rejection tests prove tool dispatch count remains zero.
-- [ ] Discovery/catalog cache hints and deterministic ordering match this profile.
-- [ ] Existing retrieval evals pass against a freshly generated index, and
+- [x] Legacy rejection tests prove tool dispatch count remains zero.
+- [x] Discovery/catalog cache hints and deterministic ordering match this profile.
+- [x] Existing retrieval evals pass against a freshly generated index, and
       content/status behavior remains unchanged.
-- [ ] The SDK adapter bundles for Netlify Edge and passes deployed preview checks.
+- [x] The SDK adapter bundles for Netlify Edge.
+- [ ] The adapter passes deployed preview checks (AL-102).
 - [ ] Supported-client evidence records exact versions, negotiated revision,
       preview URL, deployment revision, and discovery/list/search/get outcomes.
 - [ ] README configuration states the modern revision requirement and verified
       clients; `pnpm check`, relevant MCP tests, evals, and build pass.
 
 These boxes track feature implementation, not completion of spec authoring.
+
+AL-50 local evidence (2026-09-21): SDK `@modelcontextprotocol/server@2.0.0`;
+185 unit tests and 18 retrieval evals pass. `pnpm check`, lint, and the full
+`netlify build --offline` pass with Netlify CLI `27.5.2`. Netlify Dev's local
+Edge runtime successfully serves discovery, listing, search, and retrieval;
+legacy calls, GET, and an unlisted Origin are rejected. This is local evidence,
+not deployed host certification. The SDK's low-level `Server` API is retained
+for explicit protocol/domain error separation; its deprecation appears as two
+non-failing type-check hints. The adapter remaps SDK dispatch-error HTTP statuses
+to the table above and blocks the SDK's built-in subscription route.
 
 ### Scenarios
 

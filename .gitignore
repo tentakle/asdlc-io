@@ -171,3 +171,6 @@ tmp
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Local Netlify build artifacts
+.netlify/
