@@ -11,6 +11,10 @@ tags: []
 
 ## Blueprint
 
+Related contract: [MCP transport](../mcp-transport/spec.md) owns modern HTTP
+conformance and deployed client interoperability. This eval suite protects
+retrieval behavior independently of that adapter.
+
 ### Context
 
 The MCP server (`netlify/edge-functions/mcp.ts`, exposing `list_articles`, `get_article`, `search_knowledge_base`) is the *primary product surface* of `asdlc.io` for agentic consumers. Every article we ship changes the search index. Today nothing tells us whether that change degraded retrieval:

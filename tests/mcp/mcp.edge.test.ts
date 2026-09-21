@@ -1,241 +1,151 @@
-import { describe, it, expect } from 'vitest';
-import { createMockRequest, assertJsonRpcError } from '../../src/mcp/test-helpers.ts';
-import handler from '../../netlify/edge-functions/mcp.ts';
+import { afterEach, describe, expect, it, vi } from "vitest";
+import handler, { config } from "../../netlify/edge-functions/mcp.ts";
+import { ContentService } from "../../src/mcp/content.ts";
+import { createKnowledgeBaseHandler } from "../../src/mcp/server.ts";
+import { article, message, request } from "./modern-fixtures";
 
-describe('MCP Edge Function', () => {
-  describe('HTTP Method Routing', () => {
-    it('handles GET requests for SSE', async () => {
-      const req = createMockRequest('GET', 'http://localhost/mcp');
-      const res = await handler(req);
-
-      expect(res.status).toBe(200);
-      expect(res.headers.get('Content-Type')).toBe('text/event-stream');
-      expect(res.headers.get('Cache-Control')).toBe('no-cache');
-      expect(res.headers.get('Connection')).toBe('keep-alive');
-    });
-
-    it('handles POST requests for JSON-RPC', async () => {
-      const body = { jsonrpc: '2.0', id: 1, method: 'initialize' };
-      const req = createMockRequest('POST', 'http://localhost/mcp', body);
-      const res = await handler(req);
-
-      expect(res.status).toBe(200);
-      expect(res.headers.get('Content-Type')).toBe('application/json');
-    });
-
-    it('handles OPTIONS requests for CORS', async () => {
-      const req = createMockRequest('OPTIONS', 'http://localhost/mcp');
-      const res = await handler(req);
-
-      expect(res.status).toBe(204);
-      expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*');
-      expect(res.headers.get('Access-Control-Allow-Methods')).toContain('POST');
-      expect(res.headers.get('Access-Control-Allow-Methods')).toContain('GET');
-    });
-
-    it('rejects unsupported methods', async () => {
-      const req = createMockRequest('PUT', 'http://localhost/mcp');
-      const res = await handler(req);
-
-      expect(res.status).toBe(405);
-      const text = await res.text();
-      expect(text).toBe('Method Not Allowed');
-    });
+const preview = "https://deploy-preview-50--asdlc.netlify.app";
+afterEach(() => vi.unstubAllGlobals());
+describe("MCP Edge browser boundary", () => {
+  it("routes the real generated content at /mcp", async () => {
+    expect(config.path).toBe("/mcp");
+    const response = await handler(request(message("tools/list", {})));
+    expect(response.status).toBe(200);
+    expect((await response.json()).result.tools).toHaveLength(3);
   });
-
-  describe('SSE Stream', () => {
-    it('sends endpoint event with POST URL', async () => {
-      const req = createMockRequest('GET', 'http://localhost:8888/mcp');
-      const res = await handler(req);
-
-      expect(res.body).toBeDefined();
-
-      // Read the stream
-      const reader = res.body!.getReader();
-      const { value } = await reader.read();
-      const text = new TextDecoder().decode(value);
-
-      expect(text).toContain('event: endpoint');
-      expect(text).toContain('http://localhost:8888/mcp');
-
-      reader.cancel();
-    });
+  it.each([
+    "GET",
+    "DELETE",
+    "PUT",
+    "PATCH",
+    "HEAD",
+  ])("returns 405 for %s without an SSE stream", async (method) => {
+    const response = await handler(new Request("https://asdlc.io/mcp", { method }));
+    expect(response.status).toBe(405);
+    expect(response.headers.get("Allow")).toBe("POST, OPTIONS");
+    expect(response.headers.get("Content-Type")).not.toContain("event-stream");
   });
-
-  describe('Error Handling', () => {
-    it('returns parse error for invalid JSON', async () => {
-      const req = new Request('http://localhost/mcp', {
-        method: 'POST',
-        body: 'invalid json',
-        headers: { 'Content-Type': 'application/json' },
+  it.each([
+    "null",
+    "https://evil.example",
+    "https://asdlc.io/",
+    "https://asdlc.io.evil.example",
+    "not an origin",
+    "http://localhost:4321",
+  ])("rejects Origin %s even on malformed requests", async (origin) => {
+    const response = await handler(
+      new Request("https://asdlc.io/mcp", {
+        method: "POST",
+        headers: { Origin: origin },
+        body: "broken",
+      }),
+    );
+    expect(response.status).toBe(403);
+    expect(response.headers.has("Access-Control-Allow-Origin")).toBe(false);
+  });
+  it("grants the exact production origin on both success and protocol errors", async () => {
+    for (const body of [message("tools/list", {}), message("unknown", {})]) {
+      const response = await handler(request(body, { Origin: "https://asdlc.io" }));
+      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://asdlc.io");
+      expect(response.headers.get("Vary")).toContain("Origin");
+      expect(response.headers.has("Access-Control-Allow-Credentials")).toBe(false);
+    }
+  });
+  it("accepts required preflight headers case-insensitively", async () => {
+    const response = await handler(
+      new Request("https://asdlc.io/mcp", {
+        method: "OPTIONS",
+        headers: {
+          Origin: "https://asdlc.io",
+          "Access-Control-Request-Method": "POST",
+          "Access-Control-Request-Headers":
+            "content-type, ACCEPT, mcp-protocol-version, Mcp-Method, mcp-name",
+        },
+      }),
+    );
+    expect(response.status).toBe(204);
+    expect(await response.text()).toBe("");
+    expect(response.headers.get("Access-Control-Allow-Methods")).toBe("POST, OPTIONS");
+    expect(response.headers.get("Access-Control-Allow-Headers")?.toLowerCase()).toContain(
+      "mcp-name",
+    );
+  });
+  it.each<Record<string, string>>([
+    { "Access-Control-Request-Method": "GET" },
+    { "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "authorization" },
+    {},
+  ])("rejects unsupported preflight %j", async (headers) => {
+    const response = await handler(
+      new Request("https://asdlc.io/mcp", {
+        method: "OPTIONS",
+        headers: { Origin: "https://asdlc.io", ...headers },
+      }),
+    );
+    expect(response.status).toBe(403);
+    expect(response.headers.has("Access-Control-Allow-Methods")).toBe(false);
+  });
+  it("isolates explicit preview and local origins from production", async () => {
+    vi.stubGlobal("Netlify", {
+      env: {
+        get: (key: string) => (key === "MCP_PREVIEW_ORIGIN" ? preview : "http://localhost:4321"),
+      },
+    });
+    for (const [context, origin, status] of [
+      ["deploy-preview", preview, 200],
+      ["deploy-preview", "https://deploy-preview-51--asdlc.netlify.app", 403],
+      ["production", preview, 403],
+      ["production", "http://localhost:4321", 403],
+      ["dev", "http://localhost:4321", 200],
+    ] as const) {
+      const response = await handler(request(message("tools/list", {}), { Origin: origin }), {
+        deploy: { context },
+        site: {},
       });
-      const res = await handler(req);
-      const json = await res.json();
-
-      assertJsonRpcError(json);
-      expect(json.error.code).toBe(-32700);
-      expect(json.error.message).toBe('Parse error');
-    });
-
-    it('returns invalid request for missing jsonrpc field', async () => {
-      const body = { id: 1, method: 'test' }; // Missing jsonrpc
-      const req = createMockRequest('POST', 'http://localhost/mcp', body);
-      const res = await handler(req);
-      const json = await res.json();
-
-      assertJsonRpcError(json);
-      expect(json.error.code).toBe(-32600);
-      expect(json.error.message).toBe('Invalid Request');
-    });
-
-    it('returns invalid request for wrong jsonrpc version', async () => {
-      const body = { jsonrpc: '1.0', id: 1, method: 'test' };
-      const req = createMockRequest('POST', 'http://localhost/mcp', body);
-      const res = await handler(req);
-      const json = await res.json();
-
-      assertJsonRpcError(json);
-      expect(json.error.code).toBe(-32600);
-    });
-
-    it('returns invalid request for missing method', async () => {
-      const body = { jsonrpc: '2.0', id: 1 }; // Missing method
-      const req = createMockRequest('POST', 'http://localhost/mcp', body);
-      const res = await handler(req);
-      const json = await res.json();
-
-      assertJsonRpcError(json);
-      expect(json.error.code).toBe(-32600);
-    });
-
-    it('returns method not found for unknown method', async () => {
-      const body = { jsonrpc: '2.0', id: 1, method: 'unknown/method' };
-      const req = createMockRequest('POST', 'http://localhost/mcp', body);
-      const res = await handler(req);
-      const json = await res.json();
-
-      assertJsonRpcError(json);
-      expect(json.error.code).toBe(-32601);
-      expect(json.error.message).toContain('unknown/method');
-    });
+      expect(response.status).toBe(status);
+    }
   });
-
-  describe('CORS Headers', () => {
-    it('includes CORS headers in GET responses', async () => {
-      const req = createMockRequest('GET', 'http://localhost/mcp');
-      const res = await handler(req);
-
-      expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*');
+  it("never trusts the request URL to permit a preview origin", async () => {
+    const req = request(message("tools/list", {}), { Origin: preview });
+    const response = await handler(new Request(`${preview}/mcp`, req), {
+      deploy: { context: "deploy-preview" },
+      site: {},
     });
-
-    it('includes CORS headers in POST responses', async () => {
-      const body = { jsonrpc: '2.0', id: 1, method: 'test' };
-      const req = createMockRequest('POST', 'http://localhost/mcp', body);
-      const res = await handler(req);
-
-      expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*');
-    });
-
-    it('includes CORS headers in error responses', async () => {
-      const req = createMockRequest('PUT', 'http://localhost/mcp');
-      const res = await handler(req);
-
-      expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*');
-    });
+    expect(response.status).toBe(403);
   });
-
-  describe('search_knowledge_base tool description enrichment', () => {
-    it('includes ASDLC expansion and domain keywords', async () => {
-      const body = { jsonrpc: '2.0', id: 2, method: 'tools/list' };
-      const req = createMockRequest('POST', 'http://localhost/mcp', body);
-      const res = await handler(req);
-      const json = await res.json();
-      
-      const searchTool = json.result.tools.find((t: any) => t.name === 'search_knowledge_base');
-      
-      expect(searchTool).toBeDefined();
-      expect(searchTool.description).toContain('ASDLC (Agentic Software Development Life Cycle)');
-      expect(searchTool.description).toContain('Agent Directives');
-      expect(searchTool.description).toContain('Determinism over Vibes');
-      expect(searchTool.description).toContain('Schema-First Development');
-      expect(searchTool.description).toContain('Type Safety');
-      expect(searchTool.description).toContain('Conventional Commits');
-      expect(searchTool.description).toContain('AI collaboration');
-      expect(searchTool.description).toContain('Concepts');
-      expect(searchTool.description).toContain('Patterns');
-    });
-
-    it('includes concrete examples in query parameter', async () => {
-      const body = { jsonrpc: '2.0', id: 3, method: 'tools/list' };
-      const req = createMockRequest('POST', 'http://localhost/mcp', body);
-      const res = await handler(req);
-      const json = await res.json();
-      
-      const searchTool = json.result.tools.find((t: any) => t.name === 'search_knowledge_base');
-      const queryParam = searchTool.inputSchema.properties.query;
-      
-      expect(queryParam.description).toContain('Vibe Coding');
-      expect(queryParam.description).toContain('Agent Directives');
-      expect(queryParam.description).toContain('Zod Schemas');
-      expect(queryParam.description).toContain('Context Engineering');
-    });
+  it("rejects origins before executing a tool", async () => {
+    const service = new ContentService([article]);
+    const spy = vi.spyOn(service, "getArticleBySlug");
+    const endpoint = createKnowledgeBaseHandler(service, { allowedOrigins: [] });
+    try {
+      expect(
+        (await endpoint.fetch(request(message(), { Origin: "https://evil.example" }))).status,
+      ).toBe(403);
+      expect(spy).not.toHaveBeenCalled();
+    } finally {
+      await endpoint.close();
+    }
   });
-
-  describe('get_article tool constraint enforcement', () => {
-    it('includes search-first constraint in description', async () => {
-      const body = { jsonrpc: '2.0', id: 4, method: 'tools/list' };
-      const req = createMockRequest('POST', 'http://localhost/mcp', body);
-      const res = await handler(req);
-      const json = await res.json();
-      
-      const getTool = json.result.tools.find((t: any) => t.name === 'get_article');
-      
-      expect(getTool).toBeDefined();
-      expect(getTool.description).toContain('ONLY after');
-      expect(getTool.description).toContain('search_knowledge_base');
-      expect(getTool.description).toContain('Do not attempt to guess slug names');
-    });
-
-    it('includes slug format examples and warnings', async () => {
-      const body = { jsonrpc: '2.0', id: 5, method: 'tools/list' };
-      const req = createMockRequest('POST', 'http://localhost/mcp', body);
-      const res = await handler(req);
-      const json = await res.json();
-      
-      const getTool = json.result.tools.find((t: any) => t.name === 'get_article');
-      const slugParam = getTool.inputSchema.properties.slug;
-      
-      expect(slugParam.description).toContain('exact slug value');
-      expect(slugParam.description).toContain('Do not construct or guess');
-      expect(slugParam.description).toMatch(/context-engineering|agent-directives/);
-    });
-  });
-
-  describe('list_articles tool description enrichment', () => {
-    it('includes ASDLC expansion and metadata clarification', async () => {
-      const body = { jsonrpc: '2.0', id: 6, method: 'tools/list' };
-      const req = createMockRequest('POST', 'http://localhost/mcp', body);
-      const res = await handler(req);
-      const json = await res.json();
-      
-      const listTool = json.result.tools.find((t: any) => t.name === 'list_articles');
-      
-      expect(listTool).toBeDefined();
-      expect(listTool.description).toContain('ASDLC (Agentic Software Development Life Cycle)');
-      expect(listTool.description).toContain('metadata');
-      expect(listTool.description).toContain('Live and Experimental');
-    });
-
-    it('includes use case guidance', async () => {
-      const body = { jsonrpc: '2.0', id: 7, method: 'tools/list' };
-      const req = createMockRequest('POST', 'http://localhost/mcp', body);
-      const res = await handler(req);
-      const json = await res.json();
-      
-      const listTool = json.result.tools.find((t: any) => t.name === 'list_articles');
-      
-      expect(listTool.description).toContain('browse');
-      expect(listTool.description).toContain('overview');
-    });
+  it("does not list, search, or retrieve unpublished documents", async () => {
+    const service = new ContentService([
+      article,
+      ...(["Draft", "Proposed", "Deprecated"] as const).map((status) => ({
+        ...article,
+        status,
+        slug: status,
+      })),
+    ]);
+    expect((await service.listArticles()).map((a) => a.slug)).toEqual([article.slug]);
+    expect((await service.searchArticles("context")).map((a) => a.slug)).toEqual([article.slug]);
+    const endpoint = createKnowledgeBaseHandler(service, { allowedOrigins: [] });
+    try {
+      for (const slug of ["Draft", "Proposed", "Deprecated"]) {
+        const response = await endpoint.fetch(
+          request(message("tools/call", { name: "get_article", arguments: { slug } })),
+        );
+        expect((await response.json()).result.isError).toBe(true);
+      }
+    } finally {
+      await endpoint.close();
+    }
   });
 });

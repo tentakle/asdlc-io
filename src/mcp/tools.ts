@@ -1,11 +1,11 @@
 import type { ContentService } from "./content.ts";
 
-export interface JsonSchemaProperty {
+export type JsonSchemaProperty = {
   type: string;
   description?: string;
   enum?: string[];
   default?: string;
-}
+};
 
 export interface McpTool {
   name: string;

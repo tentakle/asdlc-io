@@ -97,6 +97,11 @@ Because all panels are present in the DOM, LLMs and AEO crawlers see every insta
 | `zed` | Zed | json | settings.json fragment |
 | `antigravity` | Antigravity | json | `.agents/mcp.json` fragment |
 
+Client configuration examples are not interoperability certification. The homepage
+consumer states the modern MCP revision requirement and distinguishes the verified
+reference client from unverified agent hosts (AL-102); the tab data does not imply
+that every named client is supported.
+
 The exact `code` strings are TBD — pulled from each client's current official docs at implementation time. Each entry must include a `docsHref` to the upstream documentation so readers can verify.
 
 ### Migration
