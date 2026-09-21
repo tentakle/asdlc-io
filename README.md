@@ -80,7 +80,7 @@ This project is more than just a website; it is an MCP server.
 - **Architecture**: official TypeScript server SDK `2.0.0` over a build-time content manifest, packaged for Netlify Edge.
 - **Request requirements**: POST JSON with `Accept: application/json, text/event-stream`, `MCP-Protocol-Version`, `Mcp-Method`, and `Mcp-Name` for tool calls. Each request supplies protocol-version and client-capability metadata; discovery is optional.
 - **Contract**: [MCP transport](./specs/mcp-transport/spec.md).
-- **Verified on preview**: TypeScript client `@modelcontextprotocol/client@2.0.0`, pinned to `2026-07-28`, completes discovery/list/search/get. See the [dated evidence and deployment revision](./docs/verification/mcp-2026-09-21.md). Claude Code `2.1.278` remains **unverified**, as do the other editor setup examples. Production cutover is pending.
+- **Verified on preview**: TypeScript client `@modelcontextprotocol/client@2.0.0`, pinned to `2026-07-28`, completes discovery/list/search/get. See the [dated evidence and deployment revision](./docs/verification/mcp-2026-09-21.md). Claude Code `2.1.278` remains **unverified**, as do the other editor setup examples.
 
 Verify a deployment with both the wire script and the actual reference client:
 
