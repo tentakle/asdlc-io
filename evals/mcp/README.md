@@ -1,14 +1,35 @@
 # MCP Evals
 
-Deterministic retrieval-quality gate for the asdlc.io MCP server. See `specs/mcp-evals/spec.md` for full context.
+Deterministic retrieval-quality gate for the asdlc.io MCP server. See the [contract](../../specs/mcp-evals/spec.md).
 
 ## Run
 
 ```sh
+pnpm build:mcp-index
 pnpm evals:mcp
 ```
 
 Exits non-zero on any failure. Reads `src/mcp/articles.json` (rebuild with `pnpm build:mcp-index` if stale).
+
+## Cadence and coverage
+
+Run the commands above after changes to published content, index generation,
+search configuration, MCP tool responses, or fixtures, and before requesting
+review. The existing `lefthook.yml` pre-push gate runs `pnpm build` (which rebuilds
+the index) followed by `pnpm evals:mcp`. If hooks are bypassed or unavailable,
+run that sequence explicitly before pushing. This is a local gate, not hosted CI.
+
+The suite covers 21 positive search intents plus an empty-result query, listing,
+and seven article retrieval cases: 30 cases total. New coverage includes skills,
+TDD, context amnesia, artifact validation, model routing, specification maintenance,
+workflow orchestration, recipes, and the Agent Skills → MCP cross-reference. These are
+editorially selected intents, not a measured ranking of real agent demand.
+When AL-77 telemetry is available, use observed queries and failed lookups to
+inform subsequent fixtures; it is not a prerequisite for this suite.
+
+Feature Assembly was excluded as a positive candidate because it is Draft.
+A negative retrieval fixture now guards that publication boundary. If the article
+is intentionally published, update that fixture with the status change.
 
 ## Fixture file
 
@@ -16,7 +37,11 @@ Exits non-zero on any failure. Reads `src/mcp/articles.json` (rebuild with `pnpm
 
 - **`search`** — cases against `search_knowledge_base`. Each case asserts `mustInclude`, `topN`, `mustNotInclude`, or `minResults`.
 - **`list`** — cases against `list_articles`. Asserts `minTotal` and required slugs.
-- **`get`** — cases against `get_article`. Asserts `isError`, `minContentLength`, `h1Contains`.
+- **`get`** — cases against `get_article`. Asserts `isError`, `minContentLength`, `h1Contains`, and `contentIncludes` (literal Markdown snippets, such as links or recipe headings).
+
+`minResults: 0` is the harness's exact-empty assertion. Successful `get` cases
+explicitly set `isError: false`; cross-reference coverage checks both the source
+link and a separate successful retrieval of its target.
 
 ## Authoring guidelines
 

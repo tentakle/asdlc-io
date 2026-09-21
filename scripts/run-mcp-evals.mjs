@@ -128,6 +128,9 @@ for (const c of fixtures.get) {
     const h1 = text.match(/^#\s+(.+)$/m)?.[1] ?? "";
     if (!h1.includes(exp.h1Contains)) failures.push(`H1 "${h1}" missing "${exp.h1Contains}"`);
   }
+  for (const snippet of exp.contentIncludes ?? []) {
+    if (!text.includes(snippet)) failures.push(`content missing ${JSON.stringify(snippet)}`);
+  }
   const summary = `get_article(${c.slug}) → ${isError ? "error" : `${text.length} chars`}`;
   record("get", c.id, failures.length ? "FAIL" : "PASS", failures.length ? `${summary} :: ${failures.join("; ")}` : summary);
 }
