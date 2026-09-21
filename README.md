@@ -80,7 +80,30 @@ This project is more than just a website; it is an MCP server.
 - **Architecture**: official TypeScript server SDK `2.0.0` over a build-time content manifest, packaged for Netlify Edge.
 - **Request requirements**: POST JSON with `Accept: application/json, text/event-stream`, `MCP-Protocol-Version`, `Mcp-Method`, and `Mcp-Name` for tool calls. Each request supplies protocol-version and client-capability metadata; discovery is optional.
 - **Contract**: [MCP transport](./specs/mcp-transport/spec.md).
-- **Verification**: local protocol tests and Netlify bundling cover implementation. AL-102 owns the modernized `pnpm test:mcp-preview <url>` script and deployed host verification. Claude Code `2.1.278` and TypeScript client `2.0.0` remain **unverified targets**, not certified clients.
+- **Verified on preview**: TypeScript client `@modelcontextprotocol/client@2.0.0`, pinned to `2026-07-28`, completes discovery/list/search/get. See the [dated evidence and deployment revision](./docs/verification/mcp-2026-09-21.md). Claude Code `2.1.278` remains **unverified**, as do the other editor setup examples. Production cutover is pending.
+
+Verify a deployment with both the wire script and the actual reference client:
+
+```bash
+pnpm test:mcp-preview <preview-url> <deployed-commit>
+pnpm test:mcp-client <preview-url> <deployed-commit>
+```
+
+The SDK client requires explicit modern negotiation; its default is legacy:
+
+```js
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
+const client = new Client(
+  { name: "asdlc-reader", version: "1.0.0" },
+  { versionNegotiation: { mode: { pin: "2026-07-28" } } },
+);
+await client.connect(new StreamableHTTPClientTransport(new URL("<preview-url>/mcp")));
+```
+
+For a future Claude Code check, use HTTP configuration and launch with
+`MCP_SDK_GENERATION=v2 MCP_PROTOCOL_NEGOTIATION=auto claude`. These controls are
+[documented by Anthropic](https://code.claude.com/docs/en/mcp#mcp-client-runtimes);
+they are not evidence that Claude has passed this endpoint's checks.
 
 Browser access permits `https://asdlc.io` exactly; native clients may omit Origin.
 For a deploy preview, set `MCP_PREVIEW_ORIGIN` to that preview's exact HTTPS

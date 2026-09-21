@@ -49,6 +49,10 @@ Diagrams follow the project-wide dual-representation convention: a source
 `<figure class="mermaid-diagram">` referencing the SVG under `/mermaid/`. See
 `specs/markdown-variants/spec.md` and the `pnpm diagrams` step in `CLAUDE.md`.
 
+The MCP access section states the modern revision requirement and separates
+preview-verified reference-client evidence from unverified agent hosts. It must
+not claim production cutover before release (AL-102).
+
 ### Constraints
 
 - Internal links are root-relative (`/collection/slug`). Published content

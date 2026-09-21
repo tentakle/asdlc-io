@@ -155,6 +155,11 @@ https://asdlc.io/mcp
 
 Tools available: `search_knowledge_base`, `get_article`, `list_articles`.
 
+The modern transport uses stateless HTTP and requires MCP `2026-07-28`; legacy
+clients must upgrade. The TypeScript SDK client `2.0.0` has passed preview
+verification with that revision pinned. Claude Code and other agent hosts remain
+unverified against the modern endpoint. Production cutover is pending.
+
 ### 2. Downloadable Static Skill
 
 For offline, local-first, or air-gapped workflows, use the **Downloadable Static Skill**. This is a self-contained bundle of the Knowledge Base with relative links and agent-optimized manifest.

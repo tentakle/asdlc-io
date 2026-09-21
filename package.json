@@ -26,7 +26,8 @@
     "gsc:snapshot": "node --env-file-if-exists=.env scripts/gsc-snapshot.ts",
     "curator": "node scripts/curator-run.ts",
     "test:e2e": "playwright test",
-    "evals:mcp": "node --experimental-strip-types --no-warnings scripts/run-mcp-evals.mjs"
+    "evals:mcp": "node --experimental-strip-types --no-warnings scripts/run-mcp-evals.mjs",
+    "test:mcp-client": "node scripts/test-mcp-client.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",
@@ -42,6 +43,7 @@
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@mermaid-js/mermaid-cli": "^11.12.0",
+    "@modelcontextprotocol/client": "2.0.0",
     "@playwright/test": "^1.58.2",
     "@vitest/ui": "^4.0.16",
     "glob": "^13.0.0",

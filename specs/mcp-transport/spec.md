@@ -167,7 +167,7 @@ runtime returns to ADR review rather than silently changing the hosting model.
 - [x] Existing retrieval evals pass against a freshly generated index, and
       content/status behavior remains unchanged.
 - [x] The SDK adapter bundles for Netlify Edge.
-- [ ] The adapter passes deployed preview checks (AL-102).
+- [x] The adapter passes deployed preview wire and reference-client checks (AL-102).
 - [ ] Supported-client evidence records exact versions, negotiated revision,
       preview URL, deployment revision, and discovery/list/search/get outcomes.
 - [ ] README configuration states the modern revision requirement and verified
@@ -263,10 +263,13 @@ origins, preflight failures, notification disposal, no-ID tool calls, and
 unexpected exceptions. It proves content parity through the existing
 [retrieval eval suite](../mcp-evals/spec.md); broader intent coverage is AL-78.
 
-AL-102 runs the preview script and an actual host. Initial targets from ADR 0004
+AL-102 runs the preview script and actual clients. Initial targets from ADR 0004
 are Claude Code **2.1.278** and official TypeScript client **2.0.0**; record and
-justify replacement versions if necessary. Both are **unverified against this
-endpoint** today. Record the Claude runtime mode and actual negotiated revision.
+justify replacement versions if necessary. The TypeScript client has now passed
+the deployed preview checks; Claude Code remains unverified at the user’s explicit
+request (signed out locally). See the
+[dated verification record](../../docs/verification/mcp-2026-09-21.md). A later
+Claude run must record its runtime mode and actual negotiated revision.
 Fixtures alone cannot certify a host, and a passing local test cannot certify
 the edge deployment. All supported legacy-version claims are excluded.
 
