@@ -4,6 +4,7 @@ status: "approved"
 owner: "Ville Takanen"
 archetype: "feature"
 created: "2026-03-15"
+updated: "2026-09-22"
 tags: []
 ---
 
@@ -32,14 +33,14 @@ For asdlc.io specifically, this serves three purposes:
 1. **H1** — Site name (required)
 2. **Blockquote** — One-line site description
 3. **Body paragraphs** — License, attribution policy, MCP access
-4. **H2 sections** — Linked resource lists (concepts, patterns, practices)
+4. **H2 sections** — Linked resource lists (concepts, patterns, practices, recipes)
 5. **H2 "Optional"** — Secondary resources that can be skipped for shorter context
 
 **Content sources:**
 - Site metadata: `astro.config.mjs` (`site: "https://asdlc.io"`)
 - License: `/LICENSE` (MIT, Ville Takanen 2025)
 - MCP endpoint: `/mcp` (see `specs/mcp-server/spec.md`)
-- Article inventory: Content collections in `src/content/{concepts,patterns,practices}/`
+- Article inventory: Content collections in `src/content/{concepts,patterns,practices,recipes}/`
 
 **Relationship to existing infrastructure:**
 
@@ -56,7 +57,7 @@ For asdlc.io specifically, this serves three purposes:
 - **Auto-generating from sitemap:** Do not dynamically generate `llms.txt` from the sitemap or content collections. The file should be curated — it's a summary, not an index. A 500-line `llms.txt` defeats the purpose.
 - **Duplicating robots.txt directives:** `llms.txt` is not about access control. It's about context. Don't add `Disallow` or crawl rules — that's `robots.txt`'s job.
 - **Including Draft/Proposed content:** Only reference Live and Experimental articles, consistent with MCP and Skill filtering rules.
-- **Hardcoding article lists that rot:** The curated sections should link to index pages (`/concepts/`, `/patterns/`, `/practices/`) and key foundational articles, not every individual article. This keeps maintenance low.
+- **Hardcoding article lists that rot:** The curated sections should link to index pages (`/concepts/`, `/patterns/`, `/practices/`, `/recipes/`) and key foundational articles, not every individual article. This keeps maintenance low.
 
 ## Contract
 
@@ -67,6 +68,7 @@ For asdlc.io specifically, this serves three purposes:
 - [x] Blockquote contains a concise site description (1-2 sentences)
 - [x] Body declares: MIT license, attribution policy, MCP endpoint URL
 - [x] H2 sections link to collection index pages and key foundational articles
+- [x] Core Content links to all four collection indexes: Concepts, Patterns, Practices, and Recipes; the About summary describes the same four collections
 - [x] H2 "Optional" section exists with secondary resources
 - [x] File follows llmstxt.org spec ordering (H1 → blockquote → body → H2 sections)
 - [x] File is valid Markdown
@@ -81,6 +83,11 @@ For asdlc.io specifically, this serves three purposes:
 - File MUST stay under 100 lines — it's a summary, not a knowledge base dump
 
 ### Scenarios
+
+**Scenario: Agent discovers recipes**
+- Given: An agent reads `/llms.txt` to find ready-to-run workflows
+- When: It reads Core Content
+- Then: It finds `/recipes/` alongside the other three collection indexes
 
 **Scenario: AI crawler discovers site capabilities**
 - Given: An AI crawler fetches `https://asdlc.io/llms.txt`
@@ -116,7 +123,7 @@ The file is a single static Markdown file at `public/llms.txt`. Suggested struct
 
 ## About
 
-ASDLC.io documents the transition from craft-based software development to industrial-scale agentic systems. Content is organized into three collections: Concepts (terminology), Patterns (architectural solutions), and Practices (operational processes).
+ASDLC.io documents the transition from craft-based software development to industrial-scale agentic systems. Content is organized into four collections: Concepts (terminology), Patterns (architectural solutions), Practices (operational processes), and Recipes (ready-to-run agent workflows).
 
 ## License & Attribution
 
@@ -135,6 +142,7 @@ When citing ASDLC content, attribute as: "Source: ASDLC.io — [Article Title]" 
 - [Concepts](https://asdlc.io/concepts/): Terminology definitions (e.g., Context Engineering, Spec-Driven Development)
 - [Patterns](https://asdlc.io/patterns/): Architectural solutions (e.g., The Spec, Agent Constitution, Adversarial Code Review)
 - [Practices](https://asdlc.io/practices/): Operational processes (e.g., Living Specs, PBI Authoring, Micro-Commits)
+- [Recipes](https://asdlc.io/recipes/): Ready-to-run agent workflows
 
 ## Foundational Reading
 
