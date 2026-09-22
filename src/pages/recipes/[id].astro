@@ -58,6 +58,8 @@ const structuredDataProps = {
   title={recipe.data.longTitle ?? recipe.data.title}
   description={recipe.data.description}
   author={authorNames}
+  publishedDate={structuredDataProps.datePublished}
+  modifiedDate={structuredDataProps.dateModified}
 >
   <article class="recipe-detail">
     <RecipeHeader data={recipe.data} />
