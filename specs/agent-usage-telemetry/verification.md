@@ -19,6 +19,21 @@ Netlify cache behavior.
 
 ## Preview gate
 
+### Active deployment (2026-09-23)
+
+- Draft PR: https://github.com/villetakanen/asdlc-io/pull/83
+- Preview: https://deploy-preview-83--asdlc-io.netlify.app
+- Capture implementation: `5a6da94`; production remains unchanged.
+- Preview capture variables are configured in Netlify's Functions scope. The
+  first deploy used the preceding PR's MCP browser origin; it correctly rejected
+  the new preview origin. `MCP_PREVIEW_ORIGIN` now names PR 83 and requires a new
+  deploy before the complete wire smoke test can pass.
+- A conditional direct Markdown request returned HTTP 200 despite a matching
+  ETag. Record the actual status: a 200 delivery is eligible for capture, whereas
+  a 304 is excluded. Do not assume every conditional request returns 304.
+- Provider ingestion and field placement are still being verified; neither
+  initial deployment success nor HTTP response parity proves capture delivery.
+
 1. Select a private PostHog Cloud EU project. Record its region, access controls,
    retention settings and billing limits. Keep production capture off.
 2. Configure `TELEMETRY_MODE=preview`,
