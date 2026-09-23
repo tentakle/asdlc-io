@@ -4,7 +4,7 @@
 
 ## About
 
-ASDLC.io documents the transition from craft-based software development to industrial-scale agentic systems. Content is organized into three collections: Concepts (terminology), Patterns (architectural solutions), and Practices (operational processes).
+ASDLC.io documents the transition from craft-based software development to industrial-scale agentic systems. Content is organized into four collections: Concepts (terminology), Patterns (architectural solutions), Practices (operational processes), and Recipes (ready-to-run agent workflows).
 
 ## License & Attribution
 
@@ -23,6 +23,7 @@ When citing ASDLC content, attribute as: "Source: ASDLC.io — [Article Title]" 
 - [Concepts](https://asdlc.io/concepts/): Terminology definitions (e.g., Context Engineering, Spec-Driven Development)
 - [Patterns](https://asdlc.io/patterns/): Architectural solutions (e.g., The Spec, Agent Constitution, Adversarial Code Review)
 - [Practices](https://asdlc.io/practices/): Operational processes (e.g., Living Specs, PBI Authoring, Micro-Commits)
+- [Recipes](https://asdlc.io/recipes/): Ready-to-run agent workflows
 
 ## Foundational Reading
 

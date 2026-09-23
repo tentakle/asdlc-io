@@ -4,6 +4,7 @@ status: "approved"
 owner: "Ville Takanen"
 archetype: "feature"
 created: "2026-03-15"
+updated: "2026-09-22"
 tags: []
 ---
 
@@ -13,7 +14,7 @@ tags: []
 
 ### Context
 
-Every article page (concepts, patterns, practices) emits two layers of machine-readable metadata:
+Every article page (concepts, patterns, practices, recipes) emits two layers of machine-readable metadata:
 
 1. **Schema.org JSON-LD** — via `StructuredData.astro` component (consumed by Google, Bing, AI crawlers)
 2. **HTML meta tags** — via `SEOMetadata.astro` through `BaseLayout` (consumed by social platforms, search engines)
@@ -41,6 +42,8 @@ src/pages/{collection}/[...slug].astro  (builds structuredDataProps)
                • description → <meta property="og:description">
 ```
 
+**Article dates (AL-75):** All four article routes pass the same ISO dates used by JSON-LD through `src/layouts/BaseLayout.astro` or `src/layouts/RecipeLayout.astro` to `src/components/SEOMetadata.astro`. Recipe detail routing lives in `src/pages/recipes/[id].astro`. Publication time uses `publishedDate` when present, otherwise `lastUpdated`; modification time uses `lastUpdated`.
+
 **Affected Files:**
 
 | File | Role |
@@ -49,8 +52,8 @@ src/pages/{collection}/[...slug].astro  (builds structuredDataProps)
 | `src/pages/concepts/[...slug].astro` | **Reference implementation.** Correct behavior. |
 | `src/pages/practices/[...slug].astro` | **Reference implementation.** Correct behavior. |
 | `src/components/StructuredData.astro` | Consumer — renders JSON-LD from props. No changes needed. |
-| `src/components/SEOMetadata.astro` | Consumer — renders meta tags from `BaseLayout` props. No changes needed. |
-| `src/layouts/BaseLayout.astro` | Pass-through for `title` and `description`. No changes needed. |
+| `src/components/SEOMetadata.astro` | Consumer — renders meta tags, including optional article dates, from layout props. |
+| `src/layouts/BaseLayout.astro` | Pass-through for title, description, and optional article dates. |
 
 ### Current Bug (patterns/[...slug].astro)
 
@@ -84,6 +87,9 @@ description: `Architectural pattern: ${pattern.data.title}`,
 
 ### Definition of Done
 
+- [x] All four article collections emit `article:published_time` and `article:modified_time` equal to JSON-LD `datePublished` and `dateModified`
+- [x] Website metadata omits article date tags; article metadata omits any date tag whose value is absent
+
 - [x] `patterns/[...slug].astro` passes `pattern.data.description` (not a hardcoded string) to both `structuredDataProps.description` and `BaseLayout description=`
 - [x] `patterns/[...slug].astro` passes `pattern.data.tags?.join(", ")` as `structuredDataProps.keywords`
 - [x] All three `[...slug].astro` routes produce identical `structuredDataProps` shapes (same keys, same source fields)
@@ -96,9 +102,25 @@ description: `Architectural pattern: ${pattern.data.title}`,
 - The `description` field in `structuredDataProps` MUST always originate from `{entry}.data.description` — never from string interpolation or concatenation
 - The `keywords` field MUST always originate from `{entry}.data.tags` — never hardcoded
 - `BaseLayout` `description` prop MUST match the value passed to `structuredDataProps.description` — a single source of truth, no divergence
-- `StructuredData.astro` and `SEOMetadata.astro` are consumers only — fixes go in the page routes, not the components
+- `StructuredData.astro` and `SEOMetadata.astro` consume dates supplied by page routes; layouts forward them. Frontmatter interpretation and fallback decisions remain in the routes.
+- Open Graph dates and JSON-LD dates must match, including the existing publication-date fallback. No build-time or current-time dates are substituted.
 
 ### Scenarios
+
+**Scenario: Article has a publication date**
+- Given: An article has distinct publication and modification dates
+- When: Its page is built
+- Then: Both Open Graph date tags contain ISO timestamps matching their JSON-LD counterparts
+
+**Scenario: Publication date is absent**
+- Given: An article has only `lastUpdated`
+- When: Its page is built
+- Then: Both Open Graph dates equal `lastUpdated`, matching JSON-LD
+
+**Scenario: Dates do not apply or are unavailable**
+- Given: Metadata is rendered for a website, or for an article without date props
+- When: The metadata is inspected
+- Then: Website metadata has no article date tags, and article metadata omits unavailable dates
 
 **Scenario: Pattern page renders correct structured data**
 - Given: Pattern "The Spec" has frontmatter `description: "Living documents that serve as the permanent source of truth..."`

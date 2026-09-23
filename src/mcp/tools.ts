@@ -1,3 +1,4 @@
+import type { Outcome } from "../lib/telemetry/event.ts";
 import type { ContentService } from "./content.ts";
 
 export type JsonSchemaProperty = {
@@ -65,7 +66,7 @@ export async function handleToolCall(
   name: string,
   params: Record<string, string>,
   contentService: ContentService,
-): Promise<{ content: { type: "text"; text: string }[]; isError?: boolean }> {
+): Promise<{ content: { type: "text"; text: string }[]; isError?: boolean; telemetry: Outcome }> {
   switch (name) {
     case "list_articles": {
       const articles = await contentService.listArticles();
@@ -74,6 +75,13 @@ export async function handleToolCall(
         .join("\n");
       return {
         content: [{ type: "text", text: text || "No articles found." }],
+        telemetry: {
+          operation: "list",
+          outcome: "success",
+          failureCategory: null,
+          resultCount: articles.length,
+          articleIds: [],
+        },
       };
     }
 
@@ -90,6 +98,13 @@ export async function handleToolCall(
             },
           ],
           isError: true,
+          telemetry: {
+            operation: "retrieve",
+            outcome: "failure",
+            failureCategory: "article_unavailable",
+            resultCount: null,
+            articleIds: [],
+          },
         };
       }
 
@@ -151,6 +166,13 @@ export async function handleToolCall(
 
       return {
         content: [{ type: "text", text: response }],
+        telemetry: {
+          operation: "retrieve",
+          outcome: "success",
+          failureCategory: null,
+          resultCount: 1,
+          articleIds: [`${article.collection}/${article.slug}`],
+        },
       };
     }
 
@@ -166,6 +188,13 @@ export async function handleToolCall(
             text: text || `No articles found matching '${query}'.`,
           },
         ],
+        telemetry: {
+          operation: "search",
+          outcome: articles.length ? "success" : "zero_results",
+          failureCategory: null,
+          resultCount: articles.length,
+          articleIds: articles.map((article) => `${article.collection}/${article.slug}`),
+        },
       };
     }
 

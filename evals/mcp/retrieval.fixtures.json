@@ -1,28 +1,39 @@
 {
-  "$schema": "./fixtures.schema.md",
   "search": [
     {
       "id": "ctx-eng-by-name",
       "query": "context engineering",
-      "description": "Direct keyword match — the canonical concept article must be the top hit.",
+      "description": "Direct keyword match \u2014 the canonical concept article must be the top hit.",
       "expect": {
-        "topN": { "n": 3, "slugs": ["context-engineering"] }
+        "topN": {
+          "n": 3,
+          "slugs": [
+            "context-engineering"
+          ]
+        }
       }
     },
     {
       "id": "ctx-eng-by-intent",
       "query": "give an agent the right information",
-      "description": "Natural-language reader intent for context engineering. We do not pin a rank — Fuse ordering on intent phrasing is fragile — but the concept must appear in results.",
+      "description": "Natural-language reader intent for context engineering. We do not pin a rank \u2014 Fuse ordering on intent phrasing is fragile \u2014 but the concept must appear in results.",
       "expect": {
-        "mustInclude": ["context-engineering"]
+        "mustInclude": [
+          "context-engineering"
+        ]
       }
     },
     {
       "id": "spec-driven-development",
       "query": "spec driven development",
-      "description": "Foundational concept — direct query must return the concept article in top-3.",
+      "description": "Foundational concept \u2014 direct query must return the concept article in top-3.",
       "expect": {
-        "topN": { "n": 3, "slugs": ["spec-driven-development"] }
+        "topN": {
+          "n": 3,
+          "slugs": [
+            "spec-driven-development"
+          ]
+        }
       }
     },
     {
@@ -30,15 +41,27 @@
       "query": "AGENTS.md",
       "description": "Readers asking about the AGENTS.md convention should find the practice that documents it.",
       "expect": {
-        "topN": { "n": 3, "slugs": ["agents-md-spec"] }
+        "topN": {
+          "n": 3,
+          "slugs": [
+            "agents-md-spec"
+          ]
+        }
       }
     },
     {
       "id": "agent-personas",
       "query": "agent personas",
-      "description": "Historical query — searching for deprecated agent personas surfaces related review and skills articles.",
+      "description": "Historical query \u2014 searching for deprecated agent personas surfaces related review and skills articles.",
       "expect": {
-        "topN": { "n": 3, "slugs": ["critic", "agent-constitution", "constitutional-review"] }
+        "topN": {
+          "n": 3,
+          "slugs": [
+            "critic",
+            "agent-constitution",
+            "constitutional-review"
+          ]
+        }
       }
     },
     {
@@ -46,15 +69,25 @@
       "query": "adversarial code review",
       "description": "Adversarial review has both a pattern and a practice article (same slug). Top-3 must contain the slug.",
       "expect": {
-        "topN": { "n": 3, "slugs": ["adversarial-code-review"] }
+        "topN": {
+          "n": 3,
+          "slugs": [
+            "adversarial-code-review"
+          ]
+        }
       }
     },
     {
       "id": "micro-commits",
       "query": "micro commits",
-      "description": "Practice for small, focused commits — direct match must be top-1.",
+      "description": "Practice for small, focused commits \u2014 direct match must be top-1.",
       "expect": {
-        "topN": { "n": 3, "slugs": ["micro-commits"] }
+        "topN": {
+          "n": 3,
+          "slugs": [
+            "micro-commits"
+          ]
+        }
       }
     },
     {
@@ -62,7 +95,10 @@
       "query": "gherkin behavior driven",
       "description": "Readers using BDD terminology should find both BDD and Gherkin concepts.",
       "expect": {
-        "mustInclude": ["behavior-driven-development", "gherkin"]
+        "mustInclude": [
+          "behavior-driven-development",
+          "gherkin"
+        ]
       }
     },
     {
@@ -70,7 +106,12 @@
       "query": "model context protocol",
       "description": "The MCP concept article must dominate the result list for its own name.",
       "expect": {
-        "topN": { "n": 3, "slugs": ["model-context-protocol"] }
+        "topN": {
+          "n": 3,
+          "slugs": [
+            "model-context-protocol"
+          ]
+        }
       }
     },
     {
@@ -78,7 +119,12 @@
       "query": "compound engineering",
       "description": "Direct concept lookup.",
       "expect": {
-        "topN": { "n": 3, "slugs": ["compound-engineering"] }
+        "topN": {
+          "n": 3,
+          "slugs": [
+            "compound-engineering"
+          ]
+        }
       }
     },
     {
@@ -86,7 +132,12 @@
       "query": "agentic SDLC",
       "description": "The site's namesake concept must be top-1 for this query.",
       "expect": {
-        "topN": { "n": 1, "slugs": ["agentic-sdlc"] }
+        "topN": {
+          "n": 1,
+          "slugs": [
+            "agentic-sdlc"
+          ]
+        }
       }
     },
     {
@@ -94,15 +145,25 @@
       "query": "levels of autonomy",
       "description": "Direct concept lookup.",
       "expect": {
-        "topN": { "n": 3, "slugs": ["levels-of-autonomy"] }
+        "topN": {
+          "n": 3,
+          "slugs": [
+            "levels-of-autonomy"
+          ]
+        }
       }
     },
     {
       "id": "vibe-coding",
       "query": "vibe coding",
-      "description": "Direct concept lookup — the anti-pattern article.",
+      "description": "Direct concept lookup \u2014 the anti-pattern article.",
       "expect": {
-        "topN": { "n": 3, "slugs": ["vibe-coding"] }
+        "topN": {
+          "n": 3,
+          "slugs": [
+            "vibe-coding"
+          ]
+        }
       }
     },
     {
@@ -111,7 +172,90 @@
       "description": "Fuzz noise must not produce results. Catches threshold regressions that would surface false positives.",
       "expect": {
         "minResults": 0,
-        "mustNotInclude": ["context-engineering", "agentic-sdlc"]
+        "mustNotInclude": [
+          "context-engineering",
+          "agentic-sdlc"
+        ]
+      }
+    },
+    {
+      "id": "agent-skills",
+      "query": "agent skills",
+      "description": "Find the standard for packaging reusable agent procedures.",
+      "expect": {
+        "mustInclude": [
+          "agent-skills"
+        ]
+      }
+    },
+    {
+      "id": "test-driven-development",
+      "query": "test driven development",
+      "description": "Find the testing discipline used to constrain generated implementations.",
+      "expect": {
+        "mustInclude": [
+          "test-driven-development"
+        ]
+      }
+    },
+    {
+      "id": "context-amnesia",
+      "query": "context amnesia",
+      "description": "Find a durable specification pattern when agents forget feature intent.",
+      "expect": {
+        "mustInclude": [
+          "the-spec"
+        ]
+      }
+    },
+    {
+      "id": "validate-artifacts",
+      "query": "validate output artifacts",
+      "description": "Find checkpoints for validating artifacts between workflow phases.",
+      "expect": {
+        "mustInclude": [
+          "context-gates"
+        ]
+      }
+    },
+    {
+      "id": "route-models",
+      "query": "model routing",
+      "description": "Find the pattern for assigning work to suitable models.",
+      "expect": {
+        "mustInclude": [
+          "model-routing"
+        ]
+      }
+    },
+    {
+      "id": "maintain-specs",
+      "query": "maintaining specifications",
+      "description": "Find practical instructions for keeping feature specifications current.",
+      "expect": {
+        "mustInclude": [
+          "living-specs"
+        ]
+      }
+    },
+    {
+      "id": "workflow-orchestration",
+      "query": "workflow as code",
+      "description": "Find practical guidance for implementing deterministic agent orchestration.",
+      "expect": {
+        "mustInclude": [
+          "workflow-as-code"
+        ]
+      }
+    },
+    {
+      "id": "review-recipe",
+      "query": "critic",
+      "description": "Find a ready-to-run review recipe, beyond the review pattern definition.",
+      "expect": {
+        "mustInclude": [
+          "critic"
+        ]
       }
     }
   ],
@@ -141,7 +285,8 @@
       "description": "Known foundational article must resolve to non-empty content with the expected H1.",
       "expect": {
         "minContentLength": 500,
-        "h1Contains": "Context Engineering"
+        "h1Contains": "Context Engineering",
+        "isError": false
       }
     },
     {
@@ -149,13 +294,57 @@
       "slug": "agentic-sdlc",
       "description": "Namesake article must resolve.",
       "expect": {
-        "minContentLength": 500
+        "minContentLength": 500,
+        "isError": false
       }
     },
     {
       "id": "get-unknown",
       "slug": "this-slug-does-not-exist-xyz",
       "description": "Unknown slugs must surface a graceful error, not a 500 or silent empty.",
+      "expect": {
+        "isError": true
+      }
+    },
+    {
+      "id": "skills-links-to-mcp",
+      "slug": "agent-skills",
+      "description": "The retrieved skills article preserves its link to MCP so an agent can discover the related concept.",
+      "expect": {
+        "isError": false,
+        "h1Contains": "Agent Skills",
+        "contentIncludes": [
+          "(/concepts/model-context-protocol)"
+        ]
+      }
+    },
+    {
+      "id": "get-related-mcp",
+      "slug": "model-context-protocol",
+      "description": "The MCP target linked from Agent Skills resolves to the related concept, not an error.",
+      "expect": {
+        "isError": false,
+        "h1Contains": "Model Context Protocol",
+        "minContentLength": 500
+      }
+    },
+    {
+      "id": "get-critic-recipe",
+      "slug": "critic",
+      "description": "Retrieving the review recipe preserves its executable guidance and recipe metadata.",
+      "expect": {
+        "isError": false,
+        "contentIncludes": [
+          "## Recipe Metadata",
+          "## Usage Hint"
+        ],
+        "minContentLength": 500
+      }
+    },
+    {
+      "id": "get-draft-unavailable",
+      "slug": "feature-assembly",
+      "description": "Feature Assembly is Draft and must remain unavailable through MCP; revise intentionally if it is published.",
       "expect": {
         "isError": true
       }

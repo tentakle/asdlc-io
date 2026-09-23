@@ -17,6 +17,7 @@
  * Registration pattern follows the repo's existing edge function, mcp.ts.
  */
 
+import { observeMarkdown } from "../../src/lib/telemetry/markdown.ts";
 // @ts-ignore: External Netlify Edge types
 import type { Config, Context } from 'https://edge.netlify.com';
 import {
@@ -56,13 +57,15 @@ export default async function handler(request: Request, context: Context): Promi
 
     const body = await mdResponse.text();
 
-    return new Response(body, {
+    const response = new Response(body, {
       status: 200,
       headers: {
         'Content-Type': 'text/markdown; charset=utf-8',
         'X-Markdown-Tokens': String(estimateMarkdownTokens(body)),
       },
     });
+    observeMarkdown(request, response, context, "markdown_negotiated", `${mapping.collection}/${mapping.slug}`);
+    return response;
   } catch {
     // Negotiation must never surface a 5xx: fall through to the default response.
     return context.next();

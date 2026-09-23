@@ -275,6 +275,9 @@ the edge deployment. All supported legacy-version claims are excluded.
 
 ## Normative references
 
+[Agent usage telemetry](../agent-usage-telemetry/spec.md) observes tool outcomes
+without changing this transport's public contract.
+
 Sources checked 2026-09-21. The revision-specific schema resolves wire-shape
 questions; SDK defaults do not override this project's selected profile.
 

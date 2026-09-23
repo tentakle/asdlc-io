@@ -1,7 +1,7 @@
 ---
 title: Model Context Protocol (MCP)
-longTitle: "Model Context Protocol: The Universal Connector for AI Agents"
-description: "Open standard for connecting AI agents to external tools and data. Covers MCP's role in agentic development, its limits, and why implementation quality matters."
+longTitle: "Model Context Protocol: Stateless Requests, Tools, and Context"
+description: "Open protocol connecting AI applications to external tools and data through self-contained requests. Protocol state, retrieval timing, and content freshness are separate concerns."
 tags:
   - Infrastructure
   - Standards
@@ -9,133 +9,113 @@ tags:
   - AI Agents
   - Context Engineering
 status: "Live"
-relatedIds: ["concepts/context-engineering", "patterns/the-spec", "patterns/context-gates", "practices/agents-md-spec", "practices/workflow-as-code"]
-lastUpdated: 2026-04-11
+relatedIds: ["concepts/context-engineering", "concepts/agent-skills", "patterns/the-spec", "patterns/context-gates", "patterns/agent-constitution", "practices/agents-md-spec", "practices/workflow-as-code"]
+lastUpdated: 2026-09-21
 references:
   - type: website
-    title: "Model Context Protocol Specification"
-    author: "MCP Core Team"
-    url: "https://modelcontextprotocol.io/specification/2025-11-25"
-    published: 2025-11-25
-    accessed: 2026-04-11
-    annotation: "The authoritative protocol specification defining tools, resources, prompts, and the Client-Host-Server architecture."
+    title: "Model Context Protocol Specification — 2026-07-28"
+    author: "Model Context Protocol"
+    url: "https://modelcontextprotocol.io/specification/2026-07-28"
+    accessed: 2026-09-21
+    annotation: "Authoritative revision defining the host/client/server roles and optional server features. The date identifies the protocol revision."
   - type: website
-    title: "The 2026 MCP Roadmap"
-    author: "MCP Blog"
-    url: "https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/"
-    published: 2026-01-15
-    accessed: 2026-04-11
-    annotation: "Strategic priorities for 2026: transport scalability, agent-to-agent communication, enterprise auth, and governance maturation via Working Groups."
+    title: "Base Protocol — Overview"
+    author: "Model Context Protocol"
+    url: "https://modelcontextprotocol.io/specification/2026-07-28/basic"
+    accessed: 2026-09-21
+    annotation: "Defines stateless requests, required per-request version and capabilities, optional client identity, and explicit identifiers for application state."
   - type: website
-    title: "Expanding the MCP Maintainer Team"
-    author: "MCP Blog"
-    url: "https://blog.modelcontextprotocol.io/posts/2026-04-08-maintainer-update/"
-    published: 2026-04-08
-    accessed: 2026-04-11
-    annotation: "Governance update reflecting MCP's move to the Agentic AI Foundation and expansion of the core maintainer group."
+    title: "Discovery"
+    author: "Model Context Protocol"
+    url: "https://modelcontextprotocol.io/specification/2026-07-28/server/discover"
+    accessed: 2026-09-21
+    annotation: "Servers implement server/discover; clients may use it to inspect versions and capabilities or invoke other RPCs directly."
   - type: website
-    title: "AGENTS.md Outperforms Skills in Our Agent Evals"
-    author: "Vercel"
+    title: "Versioning and Compatibility"
+    author: "Model Context Protocol"
+    url: "https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning"
+    accessed: 2026-09-21
+    annotation: "Distinguishes modern per-request metadata from legacy initialization and describes optional support for both protocol eras."
+  - type: website
+    title: "Streamable HTTP"
+    author: "Model Context Protocol"
+    url: "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http"
+    accessed: 2026-09-21
+    annotation: "Defines POST requests, JSON or request-scoped streaming responses, and removal of protocol sessions and the standalone GET stream."
+  - type: website
+    title: "Tools"
+    author: "Model Context Protocol"
+    url: "https://modelcontextprotocol.io/specification/2026-07-28/server/tools"
+    accessed: 2026-09-21
+    annotation: "Defines tool discovery and invocation, input schemas, capability declarations, and application responsibilities for safe tool use."
+  - type: website
+    title: "AGENTS.md outperforms skills in our agent evals"
+    author: "Jude Gao"
+    publisher: "Vercel"
     url: "https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals"
-    accessed: 2026-03-02
-    annotation: "Empirical study demonstrating that static context often outperforms active tool-based retrieval for framework knowledge, informing the static vs. dynamic context heuristic."
-  - type: website
-    title: "The Model Context Protocol's Impact on 2025"
-    author: "Thoughtworks"
-    url: "https://www.thoughtworks.com/en-us/insights/blog/generative-ai/model-context-protocol-mcp-impact-2025"
-    accessed: 2026-03-02
-    annotation: "Analysis of MCP's role in context engineering alongside security risks including tool poisoning and cross-server tool shadowing."
-  - type: website
-    title: "Everything Wrong with MCP"
-    author: "Shrivu Shankar"
-    url: "https://blog.sshh.io/p/everything-wrong-with-mcp"
-    accessed: 2026-03-02
-    annotation: "Critical analysis of MCP's security surface including prompt injection via untrusted data sources and forth-party exploits."
+    published: 2026-01-27
+    accessed: 2026-09-21
+    annotation: "Next.js 16 evaluation comparing a persistent documentation index with skill-triggered retrieval; not a direct evaluation of MCP transports."
 ---
 
 ## Definition
 
-The **Model Context Protocol (MCP)** is an open standard for connecting AI agents to external tools, data sources, and services. It provides a universal interface so that a connector built once works across any compliant AI platform — Claude, ChatGPT, Cursor, Windsurf, or custom agentic systems.
+The **Model Context Protocol (MCP)** is an open protocol connecting AI applications to external tools, data sources, and services. It standardizes communication between a host application, its client connectors, and servers that expose capabilities. Compatibility depends on shared protocol versions and supported features; a connector is not automatically usable by every AI application. This article describes revision **2026-07-28** of the [specification](https://modelcontextprotocol.io/specification/2026-07-28).
 
-MCP was open-sourced by Anthropic in November 2024. Within twelve months it had over 6,400 registered servers spanning databases, developer tools, communication platforms, and cloud infrastructure. In December 2025, Anthropic donated the protocol to the **Agentic AI Foundation (AAIF)**, a Linux Foundation directed fund co-founded by Anthropic, Block, and OpenAI. OpenAI officially adopted MCP in March 2025.
+## Key Characteristics
 
-The protocol operates on a Client-Host-Server architecture using JSON-RPC 2.0. The AI application (Host) connects to external systems (Servers) through a standardized interface that supports tool discovery, invocation, and resource access. The November 2025 specification added async support for long-running tasks and server-side agent loops. For full architectural details, see the [official specification](https://modelcontextprotocol.io/specification/2025-11-25).
+### Self-contained requests
 
-## Role in the Agentic SDLC
+MCP uses JSON-RPC 2.0. In the 2026-07-28 revision, each request carries the protocol version and client capabilities needed to process it. Client identity is optional. The server must not infer those properties from earlier requests or from the connection carrying them. State spanning requests, such as an application task, is referenced through explicit identifiers supplied by the client. Statelessness therefore does not mean that the underlying application cannot store data or perform state-changing operations. [Base protocol](https://modelcontextprotocol.io/specification/2026-07-28/basic)
 
-If agents are the cognitive engines of the agentic era, MCP is the supply chain infrastructure. It standardizes how live external state — issue trackers, databases, monitoring dashboards, third-party APIs — reaches the agent's context window.
+### Discovery and capabilities
 
-In the ASDLC, MCP serves as the **dynamic context delivery layer**: the complement to static context provided by [AGENTS.md](/practices/agents-md-spec) and [Specs](/patterns/the-spec). Static files supply stable architectural constraints that don't change between tool calls. MCP connections supply mutable, real-time information that the agent needs at the moment of inference. [Context Gates](/patterns/context-gates) mediate between the two, filtering MCP outputs before they enter the agent's reasoning loop.
+Servers implement `server/discover`, which exposes supported versions, capabilities, and server information. Calling it is optional for clients: a client can issue another valid RPC directly and handle an unsupported-version error. Discovery describes what a server offers; it does not establish a session required by later calls. [Discovery](https://modelcontextprotocol.io/specification/2026-07-28/server/discover)
 
-This separation is deliberate. Mixing stable architectural context with volatile external data in the same delivery mechanism creates noise. The agent needs to know the difference between "this is a permanent constraint" and "this is the current state of the world."
+Servers may expose tools, resources, or prompts. A tool is a callable operation with a name and input schema; resources supply context, while prompts supply reusable message templates. These features are optional, so a tools-only server need not implement resource or prompt access. [Specification](https://modelcontextprotocol.io/specification/2026-07-28)
+
+### Transport and version boundaries
+
+Modern Streamable HTTP sends each request through POST and permits either a JSON response or an SSE response stream associated with that request. Revision 2026-07-28 removes protocol-level sessions and the standalone GET stream; it does not remove all streaming. [Streamable HTTP](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
+
+Earlier revisions, including 2025-11-25, use an initialization handshake. Implementations may support both eras, but compatibility is a deliberate implementation choice. An HTTP endpoint alone does not prove that a client and server share a protocol revision. Integrations must check version support and the capabilities their workflow requires. [Versioning and compatibility](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning)
+
+## Static Content, Retrieval, and Freshness
+
+Three independent questions determine how context reaches an agent:
+
+| Dimension | Question | Example |
+| --- | --- | --- |
+| Protocol state | Does this request depend on an earlier protocol exchange? | A modern MCP request supplies its own version and capabilities. |
+| Retrieval timing | When is information selected for the task? | A search tool selects relevant documents when invoked. |
+| Content freshness | When was the underlying information updated? | A documentation index reflects its last build; a database query reflects the data visible when executed. |
+
+These distinctions follow from separating the protocol contract from the data source. A server can search a fixed documentation snapshot at query time. Its execution is dynamic, its protocol is stateless, and its content remains unchanged until the snapshot is replaced. Conversely, a stateless request can read changing issue-tracker data. Neither case makes freshness a property guaranteed by MCP.
+
+A static file can also be updated frequently or read on demand. “Static” should identify whether the discussion concerns storage, publication, or prompt inclusion, rather than imply that all file-based knowledge is permanent.
 
 ## Static vs. Dynamic Context
 
-A critical tension in agentic development is when to rely on dynamic retrieval (via MCP tools) versus static file-based context (like `AGENTS.md`). MCP is powerful, but it is not always the optimal choice.
+The useful choice is between information that should remain available throughout a task and information selected when needed. [AGENTS.md](/practices/agents-md-spec) can carry concise repository instructions and a documentation index; [Specs](/patterns/the-spec) preserve feature intent. Tool-based retrieval can select a small relevant subset of a larger corpus, whether that corpus is stable or frequently updated.
 
-### The Vercel Finding
+### The Vercel finding
 
-Vercel's 2025 agent evaluations revealed a counterintuitive result: a compressed static docs index in `AGENTS.md` outperformed sophisticated MCP skill-based retrieval. In tests measuring Next.js 16 API correctness, skills (active retrieval) reached 79% — suffering from unreliable triggering and wording fragility. The agent had to decide *when* to invoke the skill, creating a sequencing bottleneck. Static context via `AGENTS.md` achieved 100% — the information was available on every turn, eliminating the decision point entirely.
+In its January 2026 Next.js 16 evaluation, Vercel reported a 100% pass rate with a compressed documentation index in `AGENTS.md`, compared with 79% for a skill explicitly instructed to retrieve documentation. The index pointed to local documentation that the agent could read as needed; it did not embed all documentation. This was a comparison of context-delivery strategies in a particular evaluation, not an MCP transport benchmark or proof that stable knowledge should never be retrieved through tools. [Vercel evaluation](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals)
 
-### The Heuristic
+A practical heuristic is to keep essential constraints readily available and retrieve supporting material selectively. Corpus size, relevance, access controls, update cadence, and retrieval reliability all affect that choice. [Agent Skills](/concepts/agent-skills) package procedures; MCP supplies an interface through which tools and data can be accessed. The mechanisms can be combined.
 
-This maps directly to [Context Engineering](/concepts/context-engineering). The decision framework:
+## Context Budget and Implementation Quality
 
-**Use static context** (`AGENTS.md`, specs, architecture files) for: framework knowledge, coding standards, repository structure, bounded domain rules, and architectural constraints. These are stable, bounded, and must be consistently available. Zero agent reasoning required to discover them.
+Tool descriptions, schemas, and returned data occupy context when the host presents them to the model. The size of that context depends on the host's loading strategy and the server's interface, not simply on whether MCP is used. `server/discover` summarizes capabilities; it does not itself guarantee selective loading of tool definitions into a model's prompt.
 
-**Use dynamic context** (MCP) for: live external state (database contents, Slack messages, monitoring alerts), actions that change the world (executing commands, creating tickets, sending messages), and information that is too large or too volatile to embed in files.
+Focused tool descriptions and bounded results help make available operations understandable. Tool catalogs are obtained through `tools/list`, and operations run through `tools/call`. The protocol defines these interfaces but does not mandate a single user interaction model. [Tool specification](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
 
-The boundary is clear: if the information changes between agent sessions, MCP delivers it. If it doesn't, put it in a file.
+## Security and Governance Boundaries
 
-## The Context Budget Problem
+Protocol conformance does not establish that retrieved content is trustworthy or that an operation is appropriate. Hosts and servers retain responsibility for consent, access controls, and safe tool execution. External text and tool descriptions can contain untrusted instructions. [Specification security principles](https://modelcontextprotocol.io/specification/2026-07-28#security-and-trust-safety)
 
-Every tool you give an agent — MCP server, CLI tool, function call — consumes context window. This is a finite, shared resource. A tool's definition, its parameter schemas, its description text: all of it occupies space that could otherwise hold the spec, the code, or the conversation history.
+Stateless requests do not remove these obligations. HTTP deployments must validate request origins, and authorization must match the service's access requirements. Origin validation and authorization address different boundaries. [HTTP security requirements](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http#security-endpoint)
 
-This is where the discourse around MCP goes wrong. The question is not "MCP vs. CLI" or "MCP vs. function calling." They are all context delivery mechanisms. They all eat the same budget. The quality of any of them depends on the same discipline: **surface the minimum viable tool set and write tight descriptions.**
+## ASDLC Usage
 
-### The Implementation Quality Problem
-
-Most MCP servers are badly implemented. The common failure mode: expose the entire API surface as tools. A GitHub MCP server with 40 endpoints, each with verbose parameter descriptions, can consume thousands of tokens before the agent has seen a single line of code. This is not an MCP problem. It is a context engineering problem. A CLI tool that dumps a 200-line help text into the agent's prompt fails identically.
-
-The "MCP is bad" critique and the counter-migration to CLI tools miss the point. A well-crafted MCP server with 5 focused tools beats a 50-tool server. A focused CLI with 3 subcommands beats a Swiss Army knife. The problem travels with the implementer, not the protocol. Bad MCP and bad CLI fail for exactly the same reason: they flood the context window with information the agent doesn't need for the task at hand.
-
-### What Good Looks Like
-
-A well-implemented context delivery mechanism — MCP or otherwise — follows constraint minimalism:
-
-- **Minimal tool surface.** Expose 5-10 tools, not 50. If you need more, split into focused servers.
-- **Tight descriptions.** Every word in a tool description consumes tokens. Write them like you're paying per character — because you are.
-- **Scoped schemas.** Don't include optional parameters the agent will never use. Surface the 80% case.
-- **Lazy loading.** Don't dump all tool definitions at connection time if the agent may only need two of them. The 2026 roadmap's Server Cards feature addresses discovery without full connection.
-
-This is [Context Engineering](/concepts/context-engineering) applied to infrastructure. The same principles that govern how you structure a spec or an `AGENTS.md` file govern how you build an MCP server.
-
-## Security Considerations
-
-MCP's security surface grows with adoption. The protocol's initial focus on developer experience introduced threat vectors that enterprise deployments must address:
-
-**Tool poisoning** — Malicious content injected into external data sources (a database record, a shared document) can become prompt injections when a trusted MCP server reads and surfaces that data. The agent executes instructions embedded in what it treats as context.
-
-**Cross-server interference** — Multiple MCP servers active in the same session create tool confusion. An agent may invoke a tool from the wrong server, or tool descriptions from different servers may conflict.
-
-**Schema drift** — MCP tool definitions (names, descriptions, parameter schemas) are injected directly into the agent's prompt. Breaking changes to a server silently degrade agent performance without any compilation error or test failure.
-
-These risks are mitigated in the ASDLC through structural patterns rather than protocol-level fixes. [Context Gates](/patterns/context-gates) filter MCP outputs before they enter the reasoning loop. [Workflow as Code](/practices/workflow-as-code) wraps MCP tool calls in deterministic, type-safe execution pipelines where tool selection is governed by code, not left to agent reasoning. For vendoring tool schemas to prevent drift, see the [Living Specs practice](/practices/living-specs) for the same principle applied to specifications.
-
-## What MCP Doesn't Solve
-
-MCP standardizes how context reaches the model. It does not solve how that context is governed. This is a common architectural misconception: teams connect 30 MCP servers and expect the agent to orchestrate across them coherently. It won't.
-
-**Orchestration** — MCP provides tools but does not sequence when they run, how failures are handled, or when human escalation is required. That is the job of [Workflow as Code](/practices/workflow-as-code).
-
-**Governance** — MCP has no native mechanism for enforcing policy compliance across tool calls. An agent with access to a production database and a deployment tool has no protocol-level guardrail preventing it from deploying untested code. That is the job of [Context Gates](/patterns/context-gates) and the [Agent Constitution](/patterns/agent-constitution).
-
-**Action space management** — Connecting an agent to 50 tools creates a massive, unstructured action space that degrades reasoning quality. The more tools available, the more likely the agent selects the wrong one or hallucinates a tool that doesn't exist. This is the context budget problem applied to capabilities.
-
-MCP is an operational requirement for the Agentic SDLC — but it is infrastructure, not architecture. The patterns that sit above it (Context Gates, Workflow as Code, Agent Constitution) are deliberately protocol-agnostic: they work whether context arrives via MCP, CLI, function calls, or whatever replaces them next.
-
-## The Evolving Standard
-
-MCP is under active development. The 2026 roadmap, driven by Working Groups under AAIF governance, focuses on transport scalability, agent-to-agent communication, enterprise auth (SSO, RBAC, audit trails), and gateway behavior. Server Cards (v2.1) enable capability discovery without full connection, reducing latency in environments with many servers.
-
-ASDLC tracks MCP's evolution but does not couple to specific protocol versions. The patterns described here — static vs. dynamic context separation, Context Gates as a filtering layer, Workflow as Code for orchestration — are designed to survive protocol changes. MCP may be the dominant standard today; the architectural principles that govern its use will outlast any single specification revision.
+MCP is one delivery mechanism within [Context Engineering](/concepts/context-engineering): it can expose stable knowledge as well as changing external data. [Context Gates](/patterns/context-gates) validate material crossing workflow boundaries, [Workflow as Code](/practices/workflow-as-code) controls operation sequencing, and an [Agent Constitution](/patterns/agent-constitution) records persistent behavioral constraints. Those responsibilities remain necessary regardless of the protocol used to retrieve context.
