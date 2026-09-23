@@ -36,8 +36,9 @@ Netlify cache behavior.
 - A conditional direct Markdown request returned HTTP 200 despite a matching
   ETag. Record the actual status: a 200 delivery is eligible for capture, whereas
   a 304 is excluded. Do not assume every conditional request returns 304.
-- Provider ingestion and field placement are still being verified; neither
-  initial deployment success nor HTTP response parity proves capture delivery.
+- Ville confirmed preview events are visible in PostHog on 2026-09-23. This is
+  operator confirmation of ingestion; field placement and exact event counts
+  have not been independently verified.
 
 1. Select a private PostHog Cloud EU project. Record its region, access controls,
    retention settings and billing limits. Keep production capture off.
@@ -104,3 +105,15 @@ After real traffic arrives, record the dashboard link, reviewed UTC interval,
 environment, query-free findings, known coverage gaps and billing/usage review.
 Dashboard creation and first real usage review remain pending; local tests do
 not satisfy them. No local export or retention-cleanup workflow is required.
+
+## Release clearance — 0.27.0
+
+After confirming preview events arrived, Ville instructed “bump version, release”
+on 2026-09-23. This authorizes production cutover and capture enablement despite
+the remaining verification gaps; it does not turn those gaps into passing checks.
+
+Outstanding: ordinary-event query-field inspection, exact provider counting,
+deployed failure/stall isolation, project privacy and billing-setting review,
+dashboard setup and the first real usage/cost review. Check the synthetic span
+after its 30-day window (2026-10-24 or later) for expiry. AL-77 remains in progress
+until its remaining acceptance criteria are met.
