@@ -1,11 +1,12 @@
 /** Modern-only, anonymous MCP endpoint. Deployment origins never come from request headers. */
+import { createObserver, type TelemetryContext } from "../../src/lib/telemetry/capture.ts";
 import Fuse from "fuse.js";
 import { ContentService, type Article } from "../../src/mcp/content.ts";
 import { createKnowledgeBaseHandler } from "../../src/mcp/server.ts";
 import articles from "../../src/mcp/articles.json" with { type: "json" };
 import fuseIndexData from "../../src/mcp/fuse-index.json" with { type: "json" };
 
-interface EdgeContext {
+interface EdgeContext extends TelemetryContext {
   deploy: { context: string };
   site: { url?: string };
 }
@@ -35,7 +36,7 @@ export default async function handler(request: Request, context?: EdgeContext): 
     const localOrigin = runtime.Netlify?.env.get("MCP_LOCAL_ORIGIN");
     if (localOrigin) allowedOrigins.push(localOrigin);
   }
-  const endpoint = createKnowledgeBaseHandler(getService(), { allowedOrigins });
+  const endpoint = createKnowledgeBaseHandler(getService(), { allowedOrigins }, createObserver(context, "mcp"));
   try {
     return await endpoint.fetch(request);
   } finally {

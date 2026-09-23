@@ -185,6 +185,8 @@ Netlify's official [markdown-for-agents template](https://docs.netlify.com/promp
 
 ## Resources
 
+- [Agent usage telemetry](../agent-usage-telemetry/spec.md) — delivery counting for direct and negotiated Markdown.
+
 - AL-28 (Linear) — Source PBI; the 2026-07-15 comment thread carries the live-verification evidence and edge-function research
 - AL-93 (Linear) — Companion discovery surface (Link headers + `/.well-known/api-catalog`)
 - Commit `32a15cc` — `feat(markdown-variants): add markdown endpoints and assess updates` (implementation provenance)

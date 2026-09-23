@@ -50,7 +50,9 @@ describe("modern stateless MCP", () => {
         );
         expect(response.status).toBe(200);
         const body = await response.json();
-        expect(body.result).toMatchObject(await handleToolCall(name, args, service));
+        const { telemetry: _telemetry, ...expected } = await handleToolCall(name, args, service);
+        expect(body.result).toMatchObject(expected);
+        expect(body.result).not.toHaveProperty("telemetry");
         expect(body.result.resultType).toBe("complete");
         expect(body.result).not.toHaveProperty("ttlMs");
       } finally {

@@ -32,6 +32,11 @@ owned by the [MCP transport contract](../mcp-transport/spec.md).
 
 ### Constraints
 
+[Agent usage telemetry](../agent-usage-telemetry/spec.md) adds structured internal
+tool outcomes alongside the rendered response. The eval harness remains a direct
+consumer: preserve its response-content and error assertions as that internal
+shape evolves, and keep telemetry inert so evals need no network or credentials.
+
 The gate is deterministic and local: it uses the deployed retrieval logic without
 HTTP, model calls, credentials, or added dependencies. It evaluates the generated
 index, so callers rebuild that index after content changes. A normal run should

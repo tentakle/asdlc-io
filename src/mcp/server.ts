@@ -6,6 +6,12 @@ import {
   Server,
 } from "@modelcontextprotocol/server";
 import packageInfo from "../../package.json" with { type: "json" };
+import {
+  failure,
+  type Observation,
+  type Observer,
+  type Operation,
+} from "../lib/telemetry/event.ts";
 import type { ContentService } from "./content.ts";
 import { checkHttpPolicy, type McpHttpPolicy, withHttpPolicy } from "./http-policy.ts";
 import { handleToolCall, TOOLS } from "./tools.ts";
@@ -31,7 +37,11 @@ function errorResponse(
 }
 
 /** Each SDK exchange constructs a fresh protocol server; only retrieval data is reused. */
-export function createKnowledgeBaseHandler(contentService: ContentService, policy: McpHttpPolicy) {
+export function createKnowledgeBaseHandler(
+  contentService: ContentService,
+  policy: McpHttpPolicy,
+  observer?: Observer,
+) {
   const sdk = createMcpHandler(
     () => {
       // Low-level registration preserves protocol errors; the high-level tool helper
@@ -49,26 +59,49 @@ export function createKnowledgeBaseHandler(contentService: ContentService, polic
       server.setRequestHandler("tools/call", async ({ params }) => {
         const tool = TOOLS.find((candidate) => candidate.name === params.name);
         if (!tool) throw new ProtocolError(-32602, `Unknown tool: ${params.name}`);
+        const operation: Operation =
+          params.name === "get_article"
+            ? "retrieve"
+            : params.name === "search_knowledge_base"
+              ? "search"
+              : "list";
+        const observe = (value: Observation) => {
+          try {
+            observer?.(value);
+          } catch {
+            /* Telemetry never becomes a tool error. */
+          }
+        };
         const args = params.arguments ?? {};
         const required = tool.inputSchema.required ?? [];
         const invalid = required.find((key) => typeof args[key] !== "string" || args[key] === "");
-        if (invalid)
+        if (invalid) {
+          observe(failure(operation, "invalid_arguments"));
           return {
             content: [
               { type: "text" as const, text: `Parameter '${invalid}' must be a non-empty string.` },
             ],
             isError: true,
           };
+        }
         const strings: Record<string, string> = {};
         for (const key of required) {
           const value = args[key];
           if (typeof value === "string") strings[key] = value;
         }
+        let execution: Awaited<ReturnType<typeof handleToolCall>>;
         try {
-          return await handleToolCall(params.name, strings, contentService);
+          execution = await handleToolCall(params.name, strings, contentService);
         } catch {
+          observe({
+            ...failure(operation, "execution_error"),
+            ...(operation === "search" ? { query: strings.query } : {}),
+          });
           throw new ProtocolError(-32603, "Internal server error");
         }
+        const { telemetry, ...response } = execution;
+        observe({ ...telemetry, ...(operation === "search" ? { query: strings.query } : {}) });
+        return response;
       });
       return server;
     },
