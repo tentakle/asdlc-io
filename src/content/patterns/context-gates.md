@@ -3,8 +3,8 @@ title: "Context Gates"
 description: "Architectural checkpoints that filter input context and validate output artifacts between phases of work to prevent cognitive overload and ensure system integrity."
 tags: ["Architecture", "Quality Gates", "Context Engineering", "Validation"]
 status: "Experimental"
-relatedIds: ["patterns/model-routing", "concepts/agentic-sdlc", "concepts/context-engineering", "concepts/model-context-protocol", "patterns/adversarial-code-review", "patterns/constitutional-review", "practices/feature-assembly", "practices/workflow-as-code", "concepts/pr-slop", "concepts/theory-of-llm-constraints", "concepts/compound-engineering", "patterns/compound-loop", "patterns/artifact-import", "concepts/red-queen-godel-machine", "concepts/test-driven-development"]
-lastUpdated: 2026-07-15
+relatedIds: ["patterns/model-routing", "concepts/agentic-sdlc", "concepts/context-engineering", "concepts/model-context-protocol", "patterns/adversarial-code-review", "patterns/constitutional-review", "practices/feature-assembly", "practices/workflow-as-code", "concepts/pr-slop", "concepts/theory-of-llm-constraints", "concepts/compound-engineering", "patterns/compound-loop", "patterns/artifact-import", "concepts/red-queen-godel-machine", "concepts/test-driven-development", "practices/pre-implementation-analyze", "practices/implementation-converge", "recipes/verify-against-spec", "practices/evidence-before-claims"]
+lastUpdated: 2026-09-23
 references:
   - type: "website"
     title: "A Method for AI-Assisted Pull Request Reviews"
@@ -33,6 +33,10 @@ references:
     published: 2026-06-29
     annotation: "Defines controlled utility evolution epochs to prevent reward hacking when Review Gates are dynamically evolved."
 ---
+
+> [!WARNING]
+> **Stability Warning**
+> This pattern is Experimental. It may change without a deprecation cycle. Prefer linked Live articles when you need a settled contract.
 
 ## Definition
 
@@ -198,6 +202,14 @@ Mechanisms that actively **block** agents from bypassing the defined process.
 **[Feature Assembly](/practices/feature-assembly)** — The practice that uses all three Output Gates (Quality, Review, Acceptance) in the verification pipeline.
 
 **[Workflow as Code](/practices/workflow-as-code)** — The practice for implementing gate enforcement programmatically rather than via prompt instructions.
+
+**[Pre-Implementation Analyze](/practices/pre-implementation-analyze)** (Proposed) — Read-only Output Gate after planning and Input Gate before build: gaps, Contract quality, Spec↔PBI↔path consistency.
+
+**[Implementation Converge](/practices/implementation-converge)** (Proposed) — Output Gate after build: Contract scenario coverage before Adversarial Code Review.
+
+**[Verify Against Spec](/recipes/verify-against-spec)** (Experimental) — Recipe that sequences Analyze → Build → Converge → Critic as one operator path.
+
+**[Evidence Before Claims](/practices/evidence-before-claims)** (Proposed) — Quality Gate: fresh toolchain evidence before success claims.
 
 ## Strategic Value
 

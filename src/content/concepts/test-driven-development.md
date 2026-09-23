@@ -13,7 +13,9 @@ relatedIds:
   - patterns/context-gates
   - concepts/vibe-coding
   - concepts/ai-amplification
-lastUpdated: 2026-07-06
+  - practices/implementation-converge
+  - practices/evidence-before-claims
+lastUpdated: 2026-09-23
 status: "Live"
 references:
   - type: "book"
@@ -97,3 +99,5 @@ TDD is not optional in an agentic factory — it is the mechanism by which human
 **See also:**
 - [Behavior-Driven Development](/concepts/behavior-driven-development) — extends TDD from unit behavior to system-level acceptance scenarios
 - [Vibe Coding](/concepts/vibe-coding) — TDD is a primary defense against the structural debt that vibe coding accumulates
+- [Implementation Converge](/practices/implementation-converge) (Proposed) — after GREEN, map Contract scenarios to re-runnable evidence before Critic
+- [Evidence Before Claims](/practices/evidence-before-claims) (Proposed) — fresh toolchain evidence before any success claim

@@ -9,8 +9,8 @@ tags:
   - AI Agents
   - Verification
 status: "Live"
-relatedIds: ["patterns/the-spec", "concepts/spec-driven-development", "concepts/triple-debt-model", "patterns/adversarial-code-review", "concepts/context-engineering", "practices/feature-assembly", "concepts/gherkin", "concepts/learning-loop"]
-lastUpdated: 2026-07-05
+relatedIds: ["patterns/the-spec", "concepts/spec-driven-development", "concepts/triple-debt-model", "patterns/adversarial-code-review", "concepts/context-engineering", "practices/feature-assembly", "concepts/gherkin", "concepts/learning-loop", "practices/pre-implementation-analyze", "practices/implementation-converge", "recipes/write-agents-md"]
+lastUpdated: 2026-09-23
 references:
   - type: website
     title: "How to Write a Good Spec for AI Agents"
@@ -251,6 +251,8 @@ Specs should be subject to [Adversarial Requirement Review](/practices/adversari
 
 If the Critic can't construct a verification plan from the spec, the spec is incomplete. This is cheaper to fix than discovering ambiguity during code review.
 
+Before Builder handoff, the Proposed practice [Pre-Implementation Analyze](/practices/pre-implementation-analyze) offers a read-only consistency check across Spec, PBI, and cited paths. After implementation, Proposed [Implementation Converge](/practices/implementation-converge) maps Contract scenarios to evidence before Adversarial Code Review.
+
 ## Anti-Patterns
 
 ### The Stale Spec
@@ -349,3 +351,8 @@ Living Specs is the practice layer of the [Specs pattern](/patterns/the-spec). T
 In the industrial verification model, specs serve as the **input quality gate**: if the spec is ambiguous, every downstream gate — from CI to adversarial review to human acceptance — is verifying against a moving target. Spec quality is the rate-limiter for the entire pipeline. Garbage spec, garbage gates.
 
 The combination of Living Specs (capturing intent), [Adversarial Code Review](/patterns/adversarial-code-review) (verifying against intent), and [Context Gates](/patterns/context-gates) (layering verification) creates a system where Intent Debt is managed structurally rather than through tribal knowledge. The spec externalizes what the team knows. The gates verify that the code matches. The refinement cycle ensures both stay current.
+
+See also:
+
+- **[Pre-Implementation Analyze](/practices/pre-implementation-analyze)** (Proposed) — Read-only Spec↔PBI↔path checkpoint before build
+- **[Implementation Converge](/practices/implementation-converge)** (Proposed) — Contract coverage matrix after build, before Critic

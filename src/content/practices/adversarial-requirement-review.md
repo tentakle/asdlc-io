@@ -3,8 +3,8 @@ title: Adversarial Requirement Review
 description: A verification practice where a Critic Agent challenges the problem statement and assumptions before any specification or code is written.
 status: Experimental
 tags: ["practice", "verification", "product-thinking", "requirements"]
-relatedIds: ["concepts/triple-debt-model"]
-lastUpdated: 2026-02-12
+relatedIds: ["concepts/triple-debt-model", "practices/pre-implementation-analyze"]
+lastUpdated: 2026-09-23
 steps:
   - name: "Sharpen the Problem Statement"
     text: "Use the Problem Sharpener prompt to have an AI Thought Partner interview you one question at a time. The goal is to clarify who is affected, surface overlooked barriers, and challenge whether the problem is framed correctly — without soliciting solutions yet."
@@ -15,6 +15,10 @@ steps:
 ---
 
 # Adversarial Requirement Review
+
+> [!WARNING]
+> **Stability Warning**
+> This practice is Experimental. It may change without a deprecation cycle. Prefer linked Live articles when you need a settled contract.
 
 ## Definition
 
@@ -115,6 +119,7 @@ The output of this review is a validated **Problem Statement** and **Strategy**,
 
 - **[Adversarial Code Review](/practices/adversarial-code-review)**: The downstream equivalent. While Requirement Review verifies the *Why*, Code Review verifies the *How*.
 - **[Spec-Driven Development](/concepts/spec-driven-development)**: This practice ensures the Spec is worth writing.
+- **[Pre-Implementation Analyze](/practices/pre-implementation-analyze)** (Proposed): After the Spec and PBI exist, a read-only consistency check before Builder handoff—not a second challenge of *why*.
 
 ## Related Patterns
 

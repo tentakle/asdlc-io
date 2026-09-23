@@ -2,8 +2,8 @@
 title: "Adversarial Code Review"
 description: "Executing automated verification using a Critic Agent to validate implementation artifacts against Spec contracts."
 tags: ["Code Review", "Quality Gates", "Multi-Agent", "Verification"]
-relatedIds: ["patterns/adversarial-code-review", "patterns/the-spec", "patterns/agent-constitution", "recipes/critic", "concepts/theory-of-llm-constraints"]
-lastUpdated: 2026-05-20
+relatedIds: ["patterns/adversarial-code-review", "patterns/the-spec", "patterns/agent-constitution", "recipes/critic", "concepts/theory-of-llm-constraints", "practices/implementation-converge", "recipes/verify-against-spec", "practices/evidence-before-claims"]
+lastUpdated: 2026-09-23
 status: "Live"
 steps:
   - name: "Fetch Issue Context"
@@ -23,6 +23,8 @@ steps:
 **Adversarial Code Review** is the practice of automating code validation by employing a specialized **Critic Agent** to review claimed implementations against established [Spec](/patterns/the-spec) contracts and the [Agent Constitution](/patterns/agent-constitution).
 
 By separating the "Builder" role from the "Critic" role, this practice ensures that verification remains objective and rigorous, catching architectural drifts, security vulnerabilities, and logic errors that might pass standard unit tests.
+
+**Fresh session.** Prefer a Critic context that did not author the implementation. Same-session self-review after Builder work is not adversarial review—hand off to a new session (or a dedicated Critic agent) before issuing PASS / FAIL.
 
 ## When to Use
 
@@ -115,3 +117,9 @@ This practice implements:
 - **[Adversarial Code Review](/patterns/adversarial-code-review)** — The core architectural pattern of separated verification roles.
 - **[The Spec](/patterns/the-spec)** — The source of truth used for validation.
 - **[Agent Constitution](/patterns/agent-constitution)** — The set of behavioral and technical constraints enforced during review.
+
+See also:
+
+- **[Implementation Converge](/practices/implementation-converge)** (Proposed) — Completeness against Contract scenarios before Critic; Critic stays report-only
+- **[Verify Against Spec](/recipes/verify-against-spec)** (Experimental) — End-to-end Analyze → Build → Converge → Critic handoff
+- **[Evidence Before Claims](/practices/evidence-before-claims)** (Proposed) — Fresh toolchain evidence before success claims

@@ -3,7 +3,7 @@ title: "Write an AGENTS.md File"
 longTitle: "Write an AGENTS.md File for Your Agentic Project"
 description: "Create a minimal, high-signal AGENTS.md (or CLAUDE.md) that grounds coding agents without degrading performance through over-specification."
 tags: ["agents-md", "claude-code", "setup"]
-lastUpdated: 2026-04-03
+lastUpdated: 2026-09-23
 status: Live
 difficulty: Beginner
 category: Setup
@@ -14,6 +14,11 @@ prerequisites:
   - "Claude Code CLI"
 relatedIds:
   - "practices/agents-md-spec"
+  - "practices/living-specs"
+  - "practices/pbi-authoring"
+  - "practices/pre-implementation-analyze"
+  - "practices/implementation-converge"
+  - "recipes/verify-against-spec"
 agentPrompt: "Use this recipe when a project has no AGENTS.md or CLAUDE.md. Apply it at project setup or when onboarding Claude Code to an existing repo. Goal: produce a minimal, high-signal context file. Stop before adding rules that belong in a linter or type-checker."
 ---
 
@@ -112,7 +117,19 @@ Invoke via `/command`. Definitions: `.claude/skills/`
 
 Omit this section entirely for single-persona or early-stage projects.
 
-## Step 6 — Validate
+## Step 6 — Scaffold living Spec and PBI layout (greenfield)
+
+If the repository has no living-spec layout yet, create empty directories and short indexes. Do not invent domain Architecture or fill PBIs without operator Intent.
+
+```bash
+mkdir -p specs tasks/archive
+```
+
+Add `specs/README.md` pointing operators at [Living Specs](/practices/living-specs) and, when present, copy or link a `specs/TEMPLATE.md` Blueprint + Contract stub.
+
+Add `tasks/README.md` as the PBI queue index: active `PBI-*.md` files live in `tasks/`; completed items move under `tasks/archive/`. Point at [PBI Authoring](/practices/pbi-authoring).
+
+## Step 7 — Validate
 
 Run the project's type-check and build to confirm nothing is broken.
 
@@ -120,13 +137,13 @@ Run the project's type-check and build to confirm nothing is broken.
 pnpm check && pnpm build
 ```
 
-## Step 7 — Commit
+## Step 8 — Commit
 
 Stage and commit the file once the build is clean.
 
 ```bash
-git add AGENTS.md
-git commit -m "chore: add AGENTS.md"
+git add AGENTS.md specs tasks
+git commit -m "chore: add AGENTS.md and living-spec scaffold"
 ```
 
 ## What to Avoid
@@ -134,3 +151,12 @@ git commit -m "chore: add AGENTS.md"
 - Do not copy constraints already enforced by `biome.json`, `tsconfig.json`, or other toolchain configs.
 - Do not paste an LLM-generated `/init` output verbatim — use it as an inventory, then strip everything that belongs in tooling.
 - Do not add a Context Map unless agents are consistently failing to find files. See [AGENTS.md Specification](/practices/agents-md-spec) for when a Context Map is warranted.
+- Do not invent Spec Architecture or PBI Directive text during scaffold — leave templates empty for human Intent.
+
+## Under evaluation
+
+These are not steps of this Live recipe. Do not treat them as settled factory procedure:
+
+- [Pre-Implementation Analyze](/practices/pre-implementation-analyze) (Proposed) — optional consistency check before Builder handoff
+- [Implementation Converge](/practices/implementation-converge) (Proposed) — optional completeness check before Critic
+- [Verify Against Spec](/recipes/verify-against-spec) (Experimental) — one path that sequences those checks

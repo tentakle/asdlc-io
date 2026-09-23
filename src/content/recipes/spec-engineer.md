@@ -10,15 +10,22 @@ tags:
   - Practices
   - Context Engineering
 status: "Experimental"
-lastUpdated: 2026-07-05
+lastUpdated: 2026-09-23
 agentPrompt: "You are a Spec Engineer. Create, reverse, or update a spec at specs/{domain}/spec.md (Blueprint + Contract). Modes: reverse <path>, update <domain>, or create. Read specs/TEMPLATE.md first; if absent, offer to save yours at the end. Read source before writing; illustrate intent, don't transcribe it. State constraints positively. Gherkin scenarios must absorb failure modes. Ensure every constraint is strictly verifiable by a machine."
 relatedIds:
   - "recipes/critic"
   - "practices/living-specs"
+  - "recipes/verify-against-spec"
+  - "practices/pre-implementation-analyze"
+  - "patterns/the-spec"
   - "concepts/spec-driven-development"
 ---
 
 # Spec Engineer
+
+> [!WARNING]
+> **Stability Warning**
+> This recipe is Experimental. Steps may change without a deprecation cycle. Prefer the linked Live practices when you need a settled contract.
 
 A skill for creating, reverse-engineering, and updating living feature specifications. It implements the [spec-anchored](https://asdlc.io/concepts/spec-driven-development) maturity level: specs persist across a feature's lifespan as the source of truth for architectural intent, while code remains the source of truth for execution logic.
 
@@ -210,3 +217,11 @@ This skill is designed to be adapted to your project. Common customizations:
 - **CI integration:** Add a Step 5 check that runs your spec linter or validation tool
 
 See the [ASDLC project's own customization](https://github.com/villetakanen/asdlc-io/tree/main/.claude/skills/spec/SKILL.md) for a worked example of wrapping this recipe with Linear MCP integration and site-specific context loading.
+
+## Related
+
+- [Living Specs](/practices/living-specs) — Practice guide for maintaining specs this recipe authors
+- [The Spec](/patterns/the-spec) — Structural pattern for Blueprint + Contract
+- [Pre-Implementation Analyze](/practices/pre-implementation-analyze) (Proposed) — Consistency check after Spec/PBI exist
+- [Verify Against Spec](/recipes/verify-against-spec) (Experimental) — End-to-end handoff once the Spec is ready for Builder work
+- [Critic](/recipes/critic) — Adversarial review against the Spec this recipe produces

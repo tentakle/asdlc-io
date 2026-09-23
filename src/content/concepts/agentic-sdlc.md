@@ -20,7 +20,7 @@ relatedIds:
   - concepts/extreme-programming
   - concepts/theory-of-llm-constraints
 publishedDate: 2026-01-01
-lastUpdated: 2026-05-20
+lastUpdated: 2026-09-23
 status: Live
 ---
 

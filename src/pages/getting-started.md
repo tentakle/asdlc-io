@@ -139,6 +139,10 @@ See the article [Context Gates](/patterns/context-gates) for additional details 
 4. **Draft an ADR** — Document a key decision using the [ADR pattern](/patterns/the-adr).
 5. **Try the loop** — Spec → PBI → Implementation → Gate → Merge.
 
+## Under evaluation
+
+[Verify Against Spec](/recipes/verify-against-spec) (Experimental) is the handoff once a Spec and a PBI exist. A typo, pin, or rename with no Contract scenarios is an edit plus one proving command, not that handoff. The Analyze and Converge practices stay **Proposed** until consensus.
+
 Questions? The methodology is documented. The patterns are linked. Start building.
 
 ## Accessing the Knowledge Base

@@ -15,8 +15,11 @@ relatedIds:
   - concepts/model-driven-development
   - concepts/triple-debt-model
   - concepts/event-modeling
+  - practices/pre-implementation-analyze
+  - practices/implementation-converge
+  - recipes/verify-against-spec
 status: Live
-lastUpdated: 2026-05-26
+lastUpdated: 2026-09-23
 references:
   - type: "website"
     title: "Spec-Driven Development: How to Build Real Software with AI Coding Agents"
@@ -130,6 +133,12 @@ ASDLC implements Spec-Driven Development through:
 - **[Living Specs Practice](/practices/living-specs)** — How to create, maintain, and evolve specs alongside code
 - **[The Learning Loop](/concepts/learning-loop)** — The iterative cycle that addresses Beck's critique
 - **[Workflow as Code](/practices/workflow-as-code)** — Deterministic orchestration that enforces spec contracts programmatically
+
+**Under evaluation (not Live factory law yet):**
+
+- **[Pre-Implementation Analyze](/practices/pre-implementation-analyze)** (Proposed) — Consistency gate before Builder handoff
+- **[Implementation Converge](/practices/implementation-converge)** (Proposed) — Completeness gate after implementation, before Critic
+- **[Verify Against Spec](/recipes/verify-against-spec)** (Experimental) — Sequences Analyze → Build → Converge → Critic
 
 See also:
 - [Vibe Coding](/concepts/vibe-coding) — The anti-pattern SDD addresses

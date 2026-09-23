@@ -3,10 +3,10 @@ title: "AGENTS.md Specification"
 longTitle: "AGENTS.md Specification: The Standard AI Context File Convention"
 description: "The standard agents.md specification and repository-level context file convention. A research-backed guide to writing minimal, high-signal instructions for AI agents."
 tags: ["governance", "agents", "specification"]
-relatedIds: ["concepts/context-engineering", "concepts/model-context-protocol", "practices/agent-personas", "patterns/agent-constitution", "concepts/context-anchoring", "patterns/compound-loop"]
+relatedIds: ["concepts/context-engineering", "concepts/model-context-protocol", "practices/agent-personas", "patterns/agent-constitution", "concepts/context-anchoring", "patterns/compound-loop", "recipes/write-agents-md"]
 status: "Live"
 publishedDate: 2026-02-18
-lastUpdated: 2026-03-16
+lastUpdated: 2026-09-23
 steps:
   - name: "Write the Mission Section"
     text: "Write 2–4 sentences describing the project's purpose and the constraints agents cannot infer from code alone. Focus on domain-specific context that differentiates this project from generic training data."
