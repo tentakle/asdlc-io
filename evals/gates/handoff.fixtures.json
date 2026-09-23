@@ -1,0 +1,132 @@
+{
+  "description": "Deterministic checks for Pre-Implementation Analyze and Implementation Converge practice shape plus sample report/matrix oracles.",
+  "articleShape": [
+    {
+      "id": "analyze-required-sections",
+      "path": "src/content/practices/pre-implementation-analyze.md",
+      "expectSections": [
+        "Definition",
+        "When to Use",
+        "Process",
+        "Related Patterns",
+        "Common Mistakes"
+      ],
+      "expectImplements": "Context Gates",
+      "expectDefOpener": "is the process of",
+      "maxDefSentences": 4,
+      "minWords": 400
+    },
+    {
+      "id": "converge-required-sections",
+      "path": "src/content/practices/implementation-converge.md",
+      "expectSections": [
+        "Definition",
+        "When to Use",
+        "Process",
+        "Related Patterns",
+        "Common Mistakes"
+      ],
+      "expectImplements": "Context Gates",
+      "expectDefOpener": "is the process of",
+      "maxDefSentences": 4,
+      "minWords": 400
+    },
+    {
+      "id": "evidence-required-sections",
+      "path": "src/content/practices/evidence-before-claims.md",
+      "expectSections": [
+        "Definition",
+        "When to Use",
+        "Process",
+        "Related Patterns",
+        "Common Mistakes"
+      ],
+      "expectImplements": "Context Gates",
+      "expectDefOpener": "is the process of",
+      "maxDefSentences": 4,
+      "minWords": 400
+    },
+    {
+      "id": "verify-recipe-phases",
+      "path": "src/content/recipes/verify-against-spec.md",
+      "expectHeadings": [
+        "Phase 1 — Resolve artifacts",
+        "Phase 2 — Pre-Implementation Analyze",
+        "Phase 3 — Build",
+        "Phase 4 — Implementation Converge",
+        "Phase 5 — Critic"
+      ]
+    },
+    {
+      "id": "verify-recipe-carries-report-shapes",
+      "path": "src/content/recipes/verify-against-spec.md",
+      "expectHeadings": [
+        "Verdict: PASS | FAIL",
+        "Result: Converged | Gaps | FAIL",
+        "Ran <command> → exit <code>. Therefore <claim>."
+      ]
+    }
+  ],
+  "reports": [
+    {
+      "id": "analyze-pass-oracle",
+      "kind": "analyze",
+      "text": "# Pre-Implementation Analyze — PBI-example\n\n## Gaps\n- [x] Actor named\n\n## Contract quality\n- [x] Scenarios present and binary\n- [x] DoD verifiable\n- [x] Ambiguity cleared or quantified\n\n## Consistency\n- Conflict: none\n- Orphan: none\n- Missing: none\n\n## Verdict: PASS\n",
+      "expect": { "verdict": "PASS" }
+    },
+    {
+      "id": "analyze-fail-oracle",
+      "kind": "analyze",
+      "text": "# Pre-Implementation Analyze — PBI-example\n\n## Gaps\n- [ ] Success criteria unanswered\n\n## Contract quality\n- [ ] Scenarios present and binary\n\n## Consistency\n- Missing: PBI Verification vs Spec scenarios\n\n## Verdict: FAIL\n",
+      "expect": { "verdict": "FAIL" }
+    },
+    {
+      "id": "converge-converged-oracle",
+      "kind": "converge",
+      "text": "# Implementation Converge — PBI-example\n\n| Scenario | Evidence | Status |\n|----------|----------|--------|\n| Login succeeds | tests/auth::test_login | Covered |\n\n## Appended PBI tasks\n\n## Result: Converged\n",
+      "expect": { "result": "Converged" }
+    },
+    {
+      "id": "converge-gaps-oracle",
+      "kind": "converge",
+      "text": "# Implementation Converge — PBI-example\n\n| Scenario | Evidence | Status |\n|----------|----------|--------|\n| Login succeeds | — | Missing |\n\n## Appended PBI tasks\n- [ ] Add test for login success\n\n## Result: Gaps\n",
+      "expect": { "result": "Gaps" }
+    },
+    {
+      "id": "converge-fail-without-matrix",
+      "kind": "converge",
+      "text": "# Implementation Converge — PBI-example\n\nLooks fine.\n\n## Result: Converged\n",
+      "expect": { "result": "FAIL", "reason": "missing-matrix" }
+    },
+    {
+      "id": "evidence-claim-oracle",
+      "kind": "evidence",
+      "text": "Ran true → exit 0. Therefore the command succeeded.\n",
+      "expect": { "ok": true }
+    },
+    {
+      "id": "evidence-claim-observed-failure",
+      "kind": "evidence",
+      "text": "Ran false → exit 1. Therefore the command failed.\n",
+      "expect": { "ok": true }
+    },
+    {
+      "id": "evidence-claim-stale-exit",
+      "kind": "evidence",
+      "text": "Ran false → exit 0. Therefore it passed.\n",
+      "expect": { "ok": false }
+    },
+    {
+      "id": "evidence-claim-missing-oracle",
+      "kind": "evidence",
+      "text": "The suite passed.\n",
+      "expect": { "ok": false }
+    },
+    {
+      "id": "evidence-claim-no-therefore-oracle",
+      "kind": "evidence",
+      "text": "Ran make check → exit 0.\n",
+      "expect": { "ok": false }
+    }
+  ]
+}

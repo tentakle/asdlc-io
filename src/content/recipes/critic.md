@@ -12,22 +12,30 @@ tags:
   - "Code Quality"
   - "Agent Personas"
 status: "Experimental"
-lastUpdated: 2026-05-04
+lastUpdated: 2026-09-23
 agentPrompt: "You are a Critic Agent. Perform an adversarial code review of the current changeset against specs and architectural contracts. Ask: what scope? (empty = all uncommitted, branch name, commit range, or file glob). Report violations — do not fix."
 relatedIds:
   - "patterns/adversarial-code-review"
   - "practices/adversarial-code-review"
   - "recipes/spec-engineer"
+  - "recipes/verify-against-spec"
+  - "practices/implementation-converge"
+  - "practices/pre-implementation-analyze"
+  - "practices/evidence-before-claims"
   - "concepts/spec-driven-development"
 ---
 
 ## Overview
 
+> [!WARNING]
+> **Stability Warning**
+> This recipe is Experimental. Steps may change without a deprecation cycle. Prefer the linked Live practices when you need a settled contract.
+
 A **Critic Agent** is a dedicated agent whose only job is to reject code — to find what the Builder missed. It is adversarial by design, not by accident.
 
 The core insight driving this pattern is that the model that wrote the code is compromised. It knows what it built. It will rationalize. Running a review pass in the same session that produced the implementation provides minimal independent validation — the model is biased toward confirming its own work.
 
-The Critic breaks this by operating from a different stance and, where possible, a fresh context window. It reads the [Spec](/patterns/the-spec) before the diff. It assumes the code is broken until the evidence proves otherwise. It outputs a structured verdict — **PASS**, **PASS WITH NOTES**, or **FAIL** — with violations that cite specific contracts, not vibes.
+The Critic breaks this by operating from a different stance and a **fresh context window** whenever possible—do not self-review in the same session that produced the implementation. It reads the [Spec](/patterns/the-spec) before the diff. It assumes the code is broken until the evidence proves otherwise. It outputs a structured verdict — **PASS**, **PASS WITH NOTES**, or **FAIL** — with violations that cite specific contracts, not vibes.
 
 See the full pattern: [Adversarial Code Review](/patterns/adversarial-code-review).
 
@@ -281,3 +289,7 @@ The Critic does **not**:
 - [Adversarial Code Review Practice](/practices/adversarial-code-review) — The practice-level guide with step-by-step process
 - [Spec Engineer](/recipes/spec-engineer) — The companion recipe for writing and maintaining specs the Critic validates against
 - [Spec-Driven Development](/concepts/spec-driven-development) — The methodology that makes adversarial review meaningful
+- [Verify Against Spec](/recipes/verify-against-spec) (Experimental) — Sequences Analyze and Converge (both Proposed) before this Critic handoff
+- [Evidence Before Claims](/practices/evidence-before-claims) (Proposed) — Require fresh toolchain evidence before green claims
+- [Implementation Converge](/practices/implementation-converge) (Proposed) — Completeness matrix that precedes Critic
+- [Pre-Implementation Analyze](/practices/pre-implementation-analyze) (Proposed) — Read-only consistency gate before Builder work

@@ -2,9 +2,9 @@
 title: "Adversarial Code Review"
 description: "Consensus verification pattern using a secondary Critic Agent to review Builder Agent output against the Spec."
 tags: ["Code Review", "Quality Gates", "Multi-Agent", "Verification", "Context Engineering"]
-relatedIds: ["patterns/context-gates", "patterns/the-spec", "patterns/model-routing", "patterns/agentic-double-diamond", "patterns/agent-constitution", "patterns/constitutional-review", "concepts/provenance", "concepts/pr-slop", "recipes/critic", "concepts/compound-engineering", "patterns/artifact-import", "concepts/red-queen-godel-machine"]
+relatedIds: ["patterns/context-gates", "patterns/the-spec", "patterns/model-routing", "patterns/agentic-double-diamond", "patterns/agent-constitution", "patterns/constitutional-review", "concepts/provenance", "concepts/pr-slop", "recipes/critic", "concepts/compound-engineering", "patterns/artifact-import", "concepts/red-queen-godel-machine", "practices/implementation-converge"]
 status: "Live"
-lastUpdated: 2026-06-30
+lastUpdated: 2026-09-23
 references:
   - type: "website"
     title: "A Method for AI-Assisted Pull Request Reviews: Aligning Code with Business Value"
@@ -307,6 +307,7 @@ See also:
 - [Adversarial Requirement Review](/patterns/adversarial-requirement-review) — The upstream verification pattern for problem definitions
 - [Agent Constitution](/patterns/agent-constitution) — How to frame Critic behavior as adversarial
 - [Artifact Import](/patterns/artifact-import) — The audit step at the enterprise checkpoint is structurally equivalent to this pattern
+- [Implementation Converge](/practices/implementation-converge) (Proposed) — Completeness gate that runs before Critic; keeps Critic report-only
 
 ### Related Concepts
 - [Agentic SDLC](/concepts/agentic-sdlc) — The Verification phase where this pattern operates

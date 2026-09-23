@@ -2,10 +2,10 @@
 title: "Micro-Commits"
 description: "Ultra-granular commit practice for agentic workflows, treating version control as reversible save points."
 tags: ["Version Control", "Git", "Safety", "Rollback"]
-relatedIds: ["patterns/the-pbi", "patterns/context-gates", "concepts/agentic-sdlc"]
+relatedIds: ["patterns/the-pbi", "patterns/context-gates", "concepts/agentic-sdlc", "practices/evidence-before-claims"]
 status: "Live"
 publishedDate: 2025-12-27
-lastUpdated: 2026-04-15
+lastUpdated: 2026-09-23
 steps:
   - name: "Break Work into Atomic Tasks"
     text: "Divide the PBI into small, independently testable chunks — one function, one test, one schema. Each chunk maps to exactly one commit, creating discrete save points."

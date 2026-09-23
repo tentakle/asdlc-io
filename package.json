@@ -27,6 +27,7 @@
     "curator": "node scripts/curator-run.ts",
     "test:e2e": "playwright test",
     "evals:mcp": "node --experimental-strip-types --no-warnings scripts/run-mcp-evals.mjs",
+    "evals:gates": "node scripts/run-gate-evals.mjs",
     "test:mcp-client": "node scripts/test-mcp-client.mjs"
   },
   "dependencies": {

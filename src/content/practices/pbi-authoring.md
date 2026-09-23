@@ -2,9 +2,9 @@
 title: "PBI Authoring"
 description: "How to write Product Backlog Items that agents can read, execute, and verify—with templates and lifecycle guidance."
 tags: ["Agile", "Product Backlog Item", "Workflow", "Agent Execution"]
-relatedIds: ["patterns/the-pbi", "patterns/the-spec", "practices/living-specs"]
+relatedIds: ["patterns/the-pbi", "patterns/the-spec", "practices/living-specs", "practices/pre-implementation-analyze", "practices/evidence-before-claims", "recipes/write-agents-md"]
 status: "Live"
-lastUpdated: 2026-01-13
+lastUpdated: 2026-09-23
 steps:
   - name: "Ensure Accessibility"
     text: "Confirm the PBI is programmatically accessible to agents via MCP integration, API access, or repo-based markdown. A PBI locked in a UI without API access is invisible to the workflow."
@@ -112,6 +112,8 @@ Or inline:
 - [ ] Unit test coverage > 80%
 ```
 
+**Bite-sized criteria.** Prefer Verification checkboxes that a Builder can finish and prove in a short cycle (roughly minutes, not hours)—each with an explicit proving command or Spec scenario id. Do not invent a second plan document: keep granularity inside the PBI Verification list under the living Spec.
+
 ### Step 5: Declare Dependencies
 
 Explicitly state what blocks this PBI and what it blocks.
@@ -214,3 +216,5 @@ See also:
 
 - **[The Spec](/patterns/the-spec)** — The permanent context PBIs reference
 - **[Living Specs](/practices/living-specs)** — How to maintain the specs PBIs point to
+- **[Pre-Implementation Analyze](/practices/pre-implementation-analyze)** (Proposed) — Consistency gate before Builder handoff
+- **[Evidence Before Claims](/practices/evidence-before-claims)** (Proposed) — Fresh toolchain evidence before “done”

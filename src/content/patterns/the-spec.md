@@ -3,9 +3,9 @@ title: "Specs"
 longTitle: "The Spec: Living Specifications for Agentic Development"
 description: "Living documents that serve as the permanent source of truth for features, solving the context amnesia problem in agentic development."
 tags: ["Specifications", "Living Documentation", "Spec-Driven Development", "Context Engineering", "AI Agents"]
-relatedIds: ["patterns/the-pbi", "practices/feature-assembly", "patterns/experience-modeling", "concepts/context-engineering", "concepts/model-context-protocol", "patterns/model-routing", "concepts/behavior-driven-development", "concepts/gherkin", "concepts/mermaid", "concepts/provenance", "concepts/triple-debt-model", "concepts/levels-of-autonomy", "patterns/artifact-import", "concepts/event-modeling", "concepts/test-driven-development"]
+relatedIds: ["patterns/the-pbi", "practices/feature-assembly", "patterns/experience-modeling", "concepts/context-engineering", "concepts/model-context-protocol", "patterns/model-routing", "concepts/behavior-driven-development", "concepts/gherkin", "concepts/mermaid", "concepts/provenance", "concepts/triple-debt-model", "concepts/levels-of-autonomy", "patterns/artifact-import", "concepts/event-modeling", "concepts/test-driven-development", "practices/pre-implementation-analyze", "practices/implementation-converge", "recipes/verify-against-spec", "practices/evidence-before-claims"]
 status: "Live"
-lastUpdated: 2026-07-15
+lastUpdated: 2026-09-23
 references:
   - type: "book"
     title: "Living Documentation: Continuous Knowledge Sharing by Design"
@@ -209,18 +209,6 @@ The Contract section implements [Behavior-Driven Development](/concepts/behavior
 
 For detailed structure, examples, and templates, see the [Living Specs Practice Guide](/practices/living-specs).
 
-## Relationship to Other Patterns
-
-**[The PBI](/patterns/the-pbi)** — PBIs are the transient execution units (Delta) that reference specs for context. When a PBI changes contracts, it updates the spec in the same commit.
-
-**[Feature Assembly](/practices/feature-assembly)** — Specs define the acceptance criteria verified during assembly. The diagram above shows this flow.
-
-**[Experience Modeling](/patterns/experience-modeling)** — Experience models capture user journeys; specs capture the technical contracts that implement those journeys.
-
-**[Context Engineering](/concepts/context-engineering)** — Specs are structured context assets optimized for agent consumption, with predictable sections (Blueprint, Contract) for efficient extraction.
-
-**[Behavior-Driven Development](/concepts/behavior-driven-development)** — BDD provides the methodology for the Contract section. [Gherkin](/concepts/gherkin) scenarios serve as "specifications of behavior" that guide agent reasoning and define acceptance criteria.
-
 ## Specs as Living Hypotheses
 
 A spec is not a waterfall requirements document sealed before implementation begins. It is a **hypothesis**—a structured bet on how a feature should work, designed to be refined as the team learns.
@@ -254,6 +242,12 @@ This is the [Learning Loop](/concepts/learning-loop) applied to specs: the spec 
 **[Product Requirement Prompt](/concepts/product-requirement-prompt)** — Convergent framework that independently arrived at the same structure: Goal + Why + Success Criteria maps to Blueprint + Contract. See the PRP page for the full structural comparison.
 
 **[Living Specs Practice Guide](/practices/living-specs)** — Implementation instructions, templates, and maintenance practices for this pattern.
+
+**[Pre-Implementation Analyze](/practices/pre-implementation-analyze)** (Proposed) — Read-only checkpoint that judges Contract quality and Spec↔PBI consistency before build.
+
+**[Implementation Converge](/practices/implementation-converge)** (Proposed) — Maps Contract scenarios to implementation evidence after build.
+
+**[Verify Against Spec](/recipes/verify-against-spec)** (Experimental) — End-to-end handoff from Analyze through Critic against the living Spec.
 
 **[Triple Debt Model](/concepts/triple-debt-model)** — Specs are the primary mitigation for Intent Debt. Without externalized intent, every future modification — by human or agent — is a blind guess.
 

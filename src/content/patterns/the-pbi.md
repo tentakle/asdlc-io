@@ -2,9 +2,9 @@
 title: "The PBI"
 description: "A transient execution unit that defines the delta (change) while pointing to permanent context (The Spec), optimized for agent consumption."
 tags: ["Agile", "Product Backlog Item", "Spec-Driven Development", "Bounded Agency"]
-relatedIds: ["patterns/the-spec", "practices/pbi-authoring", "concepts/spec-driven-development"]
+relatedIds: ["patterns/the-spec", "practices/pbi-authoring", "concepts/spec-driven-development", "practices/pre-implementation-analyze", "practices/implementation-converge", "recipes/verify-against-spec", "practices/evidence-before-claims"]
 status: "Live"
-lastUpdated: 2026-01-13
+lastUpdated: 2026-09-23
 ---
 
 ## Definition
@@ -128,3 +128,6 @@ When a PBI requires another to complete first, the dependency is declared explic
 See also:
 - [Spec-Driven Development](/concepts/spec-driven-development) — The overarching methodology
 - [Context Gates](/patterns/context-gates) — Validation checkpoints for PBI completion
+- [Pre-Implementation Analyze](/practices/pre-implementation-analyze) (Proposed) — Consistency check before Builder handoff
+- [Implementation Converge](/practices/implementation-converge) (Proposed) — Completeness matrix after implementation
+- [Verify Against Spec](/recipes/verify-against-spec) (Experimental) — End-to-end Analyze → Build → Converge → Critic
